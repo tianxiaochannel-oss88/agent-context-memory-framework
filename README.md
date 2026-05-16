@@ -75,6 +75,15 @@ These guides are intentionally non-destructive. They help users reorganize exist
 - [OpenClaw adapter guide](docs/en/adapters/openclaw.md) / [中文](docs/zh/adapters/openclaw.md)
 - [Hermes adapter guide](docs/en/adapters/hermes.md) / [中文](docs/zh/adapters/hermes.md)
 
+## Templates and Example
+
+Use these when adapting the design to a real agent workspace:
+
+- [Templates](templates/) - copyable starting points for hot indexes, persona core, topic memory, leaf summaries, digests, and health reports.
+- [Basic example workspace](examples/basic-agent-workspace/) - a fake, minimal workspace showing how the pieces fit together.
+
+These are implementation aids, not mandatory runtime components.
+
 ## Problem
 
 Long-running agents often accumulate oversized startup files, repeated workspace injection, mixed memory/tool/persona instructions, and stale operational facts. The result is slower response time, higher token cost, truncation risk, and persona drift.
@@ -167,3 +176,5 @@ Start small:
 6. Add provenance fields such as `source_refs`, `derived_from`, `confidence`, and `last_verified`.
 7. Add a maintenance loop that creates pending proposals, never silent core changes.
 8. Evaluate vector search and reranking later only when the Markdown corpus becomes large enough to need retrieval acceleration.
+
+The [basic example workspace](examples/basic-agent-workspace/) is a safe reference shape. Do not copy it over an existing workspace without first backing up and adapting the placeholders.
