@@ -822,7 +822,165 @@ Core Persona: 500-1500 chars
 被截断时必须显式告知模型上下文已截断
 ```
 
-## 21. 落地阶段
+## 21. Memory Tree Lite 与 Provenance 模型
+
+Memory Tree Lite 是面向 agent runtime memory 的轻量摘要树。
+
+它保持 Markdown-first 和实现无关：
+
+```text
+raw records
++ leaf summaries
++ topic summaries
++ project / global digests
++ provenance links
++ drill-down retrieval
+```
+
+v1 的目标不是引入重型数据库、向量库或 rerank 服务，而是让记忆压缩可追溯。摘要可以压缩、合并、重组信息，但必须保留回到来源材料的路径。
+
+### 分层模型
+
+```text
+L0 Raw Records:
+  daily logs、transcripts、原始笔记、raw evidence。
+  基本 append-only，不热加载。
+
+L1 Leaf Summaries:
+  对一次会话、一天、一个任务或一个来源切片做短摘要。
+  必须包含 source_refs。
+
+L2 Topic Summaries:
+  面向 runtime、deployment、creative workflows、proxy/network、
+  tool routing 等重复领域的专题记忆。
+  必须包含 derived_from 和 source_refs。
+
+L3 Project / Global Digests:
+  每周或每月的跨 topic 摘要。
+  用于长期规律，不用于易变事实。
+
+Hot Index:
+  MEMORY.md 和 BOOTSTRAP_INDEX.md 只保留指针、稳定事实和检索规则。
+```
+
+### 推荐目录
+
+```text
+memory/
+  daily/
+    2026-xx-xx.md
+  leaves/
+    2026-xx-xx-runtime-context.md
+  topics/
+    runtime.md
+    deployment.md
+    creative-workflows.md
+  digests/
+    2026-Wxx.md
+```
+
+### Provenance Front Matter
+
+每个 summary 文件都应该携带足够元数据，用来说明来源、可信度和使用安全性。
+
+```yaml
+---
+id: mem-topic-deployment-2026-05-16
+type: topic_summary
+topic: deployment
+status: active
+confidence: high
+created_at: 2026-05-16
+updated_at: 2026-05-16
+last_verified: 2026-05-16
+stability: mixed
+verify_before_use: true
+source_refs:
+  - memory/daily/2026-05-16.md#deployment-session
+  - memory/leaves/2026-05-16-runtime-context.md
+derived_from:
+  - leaf-2026-05-16-runtime-context
+supersedes: null
+---
+```
+
+正文建议：
+
+```md
+# Topic: Deployment
+
+## Stable Facts
+
+## Current Workflow
+
+## Known Failure Modes
+
+## Verification Checklist
+
+## Provenance
+
+- Source:
+- Evidence:
+- Last verified:
+```
+
+### Drill-Down Retrieval
+
+正常读取路径应优先读取摘要，不确定时再逐层下钻：
+
+```text
+用户请求
+-> BOOTSTRAP_INDEX.md
+-> memory/topics/index.md
+-> 命中的 topic summary
+-> topic 不够或 confidence 低时读取 leaf summary
+-> 需要精确细节时读取 raw daily / transcript / evidence
+-> 执行前复核 volatile facts
+```
+
+这样 agent 保持快速，同时重要结论仍然有证据链。
+
+### Promotion Rule
+
+daily logs 或 raw records 不应该直接进入 hot memory，而应通过摘要树逐级提升：
+
+```text
+raw / daily
+-> candidate leaf summary
+-> topic summary proposal
+-> user-approved topic update
+-> optional project/global digest
+```
+
+Core Persona 不进入自动 Memory Tree Lite promotion。它可以被 provenance 引用，但不能被自动摘要、重写或 supersede。
+
+### 未来可选 Retrieval Layer
+
+向量搜索和 rerank 只有在 Markdown corpus 变大、关键词搜索和 topic index 不够用时才需要。
+
+未来路径：
+
+```text
+Phase 1:
+  Markdown files + topic index + provenance + rg/search。
+
+Phase 2:
+  可选 embedding search，检索 daily、leaves、topics、digests。
+
+Phase 3:
+  可选 rerank model，对召回候选重新排序。
+```
+
+规则：
+
+```text
+不要把 vector search 作为 Core Persona 的唯一读取路径。
+不要把 rerank 结果当成证据。
+始终保留 source_refs，并允许 drill down 到 raw evidence。
+embedding/rerank 是检索加速器，不是记忆权威。
+```
+
+## 22. 落地阶段
 
 ### Phase 1: 备份
 
@@ -873,7 +1031,17 @@ proxy.md
 automation-skills.md
 ```
 
-### Phase 6: 增加治理规则
+### Phase 6: 增加 Memory Tree Lite
+
+```text
+memory/leaves/
+memory/digests/
+provenance front matter
+source_refs / derived_from
+drill-down retrieval rules
+```
+
+### Phase 7: 增加治理规则
 
 ```text
 lifecycle
@@ -884,7 +1052,7 @@ conflict policy
 safe mode
 ```
 
-### Phase 7: 增加测试和报告
+### Phase 8: 增加测试和报告
 
 ```text
 golden prompts
@@ -893,7 +1061,7 @@ regression results
 read receipt summary
 ```
 
-### Phase 8: 启用半自动维护
+### Phase 9: 启用半自动维护
 
 ```text
 实际使用日志
@@ -905,7 +1073,7 @@ read receipt summary
 -> backup / rollback ready
 ```
 
-## 22. 最终原则
+## 23. 最终原则
 
 ```text
 自动观察。
@@ -929,4 +1097,5 @@ agent runtime / persona agent 更快。
 工作记忆按需读取。
 长期记忆可治理。
 框架能半自动进化，但不会偷偷改坏自己。
+摘要可追溯，并能下钻到来源证据。
 ```

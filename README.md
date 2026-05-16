@@ -91,6 +91,7 @@ This framework keeps the runtime small by separating context into three layers:
 - **Faster responses:** the agent starts from a smaller context pack and spends less time processing unrelated memory.
 - **More stable persona:** core identity stays hot-loaded, while daily logs and work topics no longer dilute the persona layer.
 - **Better work memory:** recurring domains such as runtime debugging, creative workflows, deployment, and proxy/network issues can each have focused topic memory.
+- **Traceable memory growth:** summaries can point back to their source notes, daily logs, or raw evidence instead of becoming unverifiable claims.
 - **Less truncation risk:** large files are split into indexes, topic docs, archives, and daily logs.
 - **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
 - **Controlled evolution:** the framework can observe usage and propose improvements, but core persona, hot memory, tool routing, and framework policy still require human approval.
@@ -101,6 +102,7 @@ This framework keeps the runtime small by separating context into three layers:
 - Keep the core persona always visible.
 - Keep `AGENTS.md`, `TOOLS.md`, and `MEMORY.md` lightweight.
 - Route recurring domains through topic memory instead of hot startup files.
+- Use a lightweight memory tree so summaries can be compressed without losing provenance.
 - Treat memory as hints for volatile facts; verify current state before acting.
 - Let the framework observe usage and generate candidate updates.
 - Require human approval before changing core persona, hot memory, tool routing, or framework policy.
@@ -125,6 +127,8 @@ memory/
     deployment.md
     creative-workflows.md
   daily/
+  leaves/
+  digests/
 
 docs/
   tools/
@@ -159,4 +163,6 @@ Start small:
 3. Convert large `MEMORY.md` and `TOOLS.md` files into indexes.
 4. Move recurring work domains into `memory/topics/*.md`.
 5. Add smoke tests for persona stability, tool routing, lazy loading, and volatile-fact verification.
-6. Add a maintenance loop that creates pending proposals, never silent core changes.
+6. Add provenance fields such as `source_refs`, `derived_from`, `confidence`, and `last_verified`.
+7. Add a maintenance loop that creates pending proposals, never silent core changes.
+8. Evaluate vector search and reranking later only when the Markdown corpus becomes large enough to need retrieval acceleration.

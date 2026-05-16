@@ -822,7 +822,166 @@ total bootstrap over budget: propose split
 when truncation occurs, explicitly tell the model that context was truncated
 ```
 
-## 21. Implementation Phases
+## 21. Memory Tree Lite and Provenance Model
+
+Memory Tree Lite is the lightweight version of a summary tree for agent runtime memory.
+
+It keeps the framework Markdown-first and implementation-agnostic:
+
+```text
+raw records
++ leaf summaries
++ topic summaries
++ project / global digests
++ provenance links
++ drill-down retrieval
+```
+
+The goal is not to introduce a heavy database, vector store, or rerank service in v1. The goal is to make memory compression traceable. A summary may compress, merge, or reorganize information, but it must keep a path back to the source material that produced it.
+
+### Layer Model
+
+```text
+L0 Raw Records:
+  daily logs, transcripts, original notes, raw evidence.
+  Mostly append-only. Do not hot-load.
+
+L1 Leaf Summaries:
+  short summaries of one session, one day, one task, or one source slice.
+  Must include source_refs.
+
+L2 Topic Summaries:
+  consolidated memory for recurring domains such as runtime, deployment,
+  creative workflows, proxy/network, or tool routing.
+  Must include derived_from and source_refs.
+
+L3 Project / Global Digests:
+  weekly or monthly cross-topic summaries.
+  Used for long-term patterns, not volatile facts.
+
+Hot Index:
+  MEMORY.md and BOOTSTRAP_INDEX.md keep only pointers, stable facts,
+  and retrieval rules.
+```
+
+### Suggested Layout
+
+```text
+memory/
+  daily/
+    2026-xx-xx.md
+  leaves/
+    2026-xx-xx-runtime-context.md
+  topics/
+    runtime.md
+    deployment.md
+    creative-workflows.md
+  digests/
+    2026-Wxx.md
+```
+
+### Provenance Front Matter
+
+Every summary file should carry enough metadata to explain where it came from and how safe it is to use.
+
+```yaml
+---
+id: mem-topic-deployment-2026-05-16
+type: topic_summary
+topic: deployment
+status: active
+confidence: high
+created_at: 2026-05-16
+updated_at: 2026-05-16
+last_verified: 2026-05-16
+stability: mixed
+verify_before_use: true
+source_refs:
+  - memory/daily/2026-05-16.md#deployment-session
+  - memory/leaves/2026-05-16-runtime-context.md
+derived_from:
+  - leaf-2026-05-16-runtime-context
+supersedes: null
+---
+```
+
+Suggested body:
+
+```md
+# Topic: Deployment
+
+## Stable Facts
+
+## Current Workflow
+
+## Known Failure Modes
+
+## Verification Checklist
+
+## Provenance
+
+- Source:
+- Evidence:
+- Last verified:
+```
+
+### Drill-Down Retrieval
+
+The normal read path should prefer summaries first, then drill down only when needed:
+
+```text
+user request
+-> BOOTSTRAP_INDEX.md
+-> memory/topics/index.md
+-> matched topic summary
+-> leaf summary if the topic is insufficient or low confidence
+-> raw daily / transcript / evidence if exact details are needed
+-> verify volatile facts before acting
+```
+
+This lets the agent stay fast while preserving an evidence trail for important claims.
+
+### Promotion Rule
+
+Daily logs or raw records should not jump directly into hot memory. They should move through the tree:
+
+```text
+raw / daily
+-> candidate leaf summary
+-> topic summary proposal
+-> user-approved topic update
+-> optional project/global digest
+```
+
+Core persona is not part of automatic Memory Tree Lite promotion. It may be referenced by provenance, but it must not be automatically summarized, rewritten, or superseded.
+
+### Future Optional Retrieval Layer
+
+Vector search and reranking are useful only when the Markdown corpus becomes large enough that keyword search and topic indexes are no longer enough.
+
+Future path:
+
+```text
+Phase 1:
+  Markdown files + topic index + provenance + rg/search.
+
+Phase 2:
+  Optional embedding search over daily, leaves, topics, and digests.
+
+Phase 3:
+  Optional rerank model to reorder retrieved candidates.
+```
+
+Rules:
+
+```text
+Do not use vector search as the only path to Core Persona.
+Do not use rerank results as proof.
+Always preserve source_refs and allow drill-down to raw evidence.
+Use embedding/rerank as retrieval acceleration, not memory authority.
+```
+
+## 22. Implementation Phases
 
 ### Phase 1: Backup
 
@@ -873,7 +1032,17 @@ proxy.md
 automation-skills.md
 ```
 
-### Phase 6: Add Governance Rules
+### Phase 6: Add Memory Tree Lite
+
+```text
+memory/leaves/
+memory/digests/
+provenance front matter
+source_refs / derived_from
+drill-down retrieval rules
+```
+
+### Phase 7: Add Governance Rules
 
 ```text
 lifecycle
@@ -884,7 +1053,7 @@ conflict policy
 safe mode
 ```
 
-### Phase 7: Add Tests and Reports
+### Phase 8: Add Tests and Reports
 
 ```text
 golden prompts
@@ -893,7 +1062,7 @@ regression results
 read receipt summary
 ```
 
-### Phase 8: Enable Semi-Automatic Maintenance
+### Phase 9: Enable Semi-Automatic Maintenance
 
 ```text
 real usage logs
@@ -905,7 +1074,7 @@ real usage logs
 -> backup / rollback ready
 ```
 
-## 22. Final Rule
+## 23. Final Rule
 
 ```text
 observe automatically.
@@ -929,4 +1098,5 @@ more stable persona.
 work memory loaded on demand.
 governable long-term memory.
 self-improving framework that cannot silently damage itself.
+traceable summaries that can drill down to source evidence.
 ```
