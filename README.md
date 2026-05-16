@@ -2,6 +2,21 @@
 
 A lightweight architecture for long-running AI agents that need stable persona memory, lower bootstrap token cost, lazy-loaded work memory, and controlled self-maintenance.
 
+## Why This Exists
+
+This framework came from practical issues observed while running an OpenClaw-style local agent with persona memory, workspace bootstrap files, tool instructions, topic notes, and daily work logs.
+
+The core problem was not a single broken file. It was gradual context growth:
+
+- Bootstrap and workspace files could be re-injected across turns, wasting tokens.
+- `MEMORY.md`, `TOOLS.md`, and persona notes could become overloaded with mixed responsibilities.
+- Large startup files increased truncation risk, especially for long-term memory.
+- Persona instructions, tool rules, deployment notes, and daily logs competed for the same hot context.
+- Operational facts such as ports, processes, model state, deployment status, and proxy routing could become stale if memory was trusted without verification.
+- Framework updates were useful, but unsafe if the agent could silently modify its own persona, hot memory, or routing policy.
+
+The design goal is to keep the agent fast and stable without deleting valuable memory. Instead of forcing everything into startup context, the framework keeps only the essential layer hot and moves details into indexed, lazy-loaded files.
+
 ## Design Diagram
 
 ```mermaid
@@ -45,6 +60,17 @@ This framework keeps the runtime small by separating context into three layers:
 - **Hot layer:** minimal behavior policy, core persona, memory index, and tool index. Always visible.
 - **Warm layer:** topic memory, persona profile, and detailed tool docs. Loaded only when relevant.
 - **Cold layer:** daily logs, archives, transcripts, and raw evidence. Searched on demand.
+
+## Benefits
+
+- **Lower token cost:** repeated bootstrap content is reduced, and detailed files are loaded only when relevant.
+- **Faster responses:** the agent starts from a smaller context pack and spends less time processing unrelated memory.
+- **More stable persona:** core identity stays hot-loaded, while daily logs and work topics no longer dilute the persona layer.
+- **Better work memory:** recurring domains such as runtime debugging, creative workflows, deployment, and proxy/network issues can each have focused topic memory.
+- **Less truncation risk:** large files are split into indexes, topic docs, archives, and daily logs.
+- **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
+- **Controlled evolution:** the framework can observe usage and propose improvements, but core persona, hot memory, tool routing, and framework policy still require human approval.
+- **Rollback-ready changes:** major updates are expected to include backups, smoke tests, and health reports.
 
 ## Core Principles
 
