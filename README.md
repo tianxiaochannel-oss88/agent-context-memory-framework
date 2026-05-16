@@ -1,35 +1,112 @@
 # Agent Context Memory Framework
 
-A lightweight design framework for agent runtimes that need stable persona memory, lower bootstrap token cost, lazy-loaded work memory, and semi-automatic framework maintenance.
+A lightweight architecture for long-running AI agents that need stable persona memory, lower bootstrap token cost, lazy-loaded work memory, and controlled self-maintenance.
 
-## What It Solves
+## Design Diagram
 
-Long-running AI agents often accumulate large startup files, repeated workspace injections, oversized memory notes, and mixed persona/tool/workflow instructions. This causes slower responses, higher token usage, context truncation risk, and persona drift.
+```mermaid
+flowchart TD
+    A["User Request"] --> B["Intent Router"]
+    B --> C["Context Pack Builder"]
 
-This framework separates context into hot, warm, and cold layers:
+    C --> D["Hot Layer<br/>Core policy, persona, memory index, tool index"]
+    C --> E["Warm Layer<br/>Topic memory, profile, tool docs"]
+    C --> F["Cold Layer<br/>Daily logs, archives, transcripts"]
+    C --> G["Evidence Layer<br/>Fresh local verification"]
 
-- **Hot layer:** minimal runtime policy, core persona, memory index, and tool index.
-- **Warm layer:** topic memory, persona profile, and detailed tool docs loaded only when relevant.
-- **Cold layer:** daily logs, archives, transcripts, and raw evidence searched on demand.
+    D --> H["Agent Runtime"]
+    E --> H
+    F --> H
+    G --> H
 
-## Core Ideas
+    H --> I["Read Receipts<br/>Session Summary"]
+    I --> J["Maintenance Loop"]
+    J --> K["Pending Proposals"]
+    K --> L{"Human Approval?"}
+
+    L -->|Yes| M["Apply with Backup"]
+    L -->|No| N["Keep Candidate"]
+    M --> O["Smoke Tests"]
+    O --> P["Health Report"]
+    M -. rollback .-> Q["Safe Mode"]
+```
+
+## Documentation
+
+- [English design document](docs/en/agent-context-memory-framework-design.md)
+- [中文设计文档](docs/zh/agent-context-memory-framework-design.md)
+
+## Problem
+
+Long-running agents often accumulate oversized startup files, repeated workspace injection, mixed memory/tool/persona instructions, and stale operational facts. The result is slower response time, higher token cost, truncation risk, and persona drift.
+
+This framework keeps the runtime small by separating context into three layers:
+
+- **Hot layer:** minimal behavior policy, core persona, memory index, and tool index. Always visible.
+- **Warm layer:** topic memory, persona profile, and detailed tool docs. Loaded only when relevant.
+- **Cold layer:** daily logs, archives, transcripts, and raw evidence. Searched on demand.
+
+## Core Principles
 
 - Keep the core persona always visible.
-- Turn large memory and tool files into lightweight indexes.
-- Route recurring work domains through topic memory.
-- Verify volatile facts before acting.
-- Let the framework observe usage and create candidate updates.
+- Keep `AGENTS.md`, `TOOLS.md`, and `MEMORY.md` lightweight.
+- Route recurring domains through topic memory instead of hot startup files.
+- Treat memory as hints for volatile facts; verify current state before acting.
+- Let the framework observe usage and generate candidate updates.
 - Require human approval before changing core persona, hot memory, tool routing, or framework policy.
-- Keep every major framework change testable and reversible.
+- Keep major framework changes backed up, tested, and reversible.
 
-## Repository Contents
+## Suggested Repository Layout
 
-- [`docs/agent-context-memory-framework-design.md`](docs/agent-context-memory-framework-design.md) - full design proposal.
+```text
+AGENTS.md
+BOOTSTRAP_INDEX.md
+TOOLS.md
+MEMORY.md
+
+memory/
+  persona/
+    core.md
+    profile.md
+    relationship.md
+  topics/
+    index.md
+    runtime.md
+    deployment.md
+    creative-workflows.md
+  daily/
+
+docs/
+  tools/
+  framework/
+
+pending/
+  memory-updates/
+  tool-updates/
+  framework-updates/
+
+reports/
+  framework-health.md
+  regression-results.md
+
+tests/
+  golden-prompts/
+
+backups/
+  framework/
+```
 
 ## Status
 
-This is a design-first public draft. It is intentionally implementation-agnostic and can be adapted to different agent runtimes, coding assistants, chat agents, or local automation systems.
+This is a design-first public draft. It is intentionally implementation-agnostic and can be adapted to different agent runtimes, coding assistants, chat agents, and local automation systems.
 
-## Recommended Use
+## Recommended First Implementation
 
-Start with the design document, then adapt the directory structure and policy sections to your own runtime. Keep the first version small: bootstrap index, core persona, topic index, framework policy, and smoke tests are enough for v1.
+Start small:
+
+1. Create a `BOOTSTRAP_INDEX.md`.
+2. Keep one compact `memory/persona/core.md` hot-loaded.
+3. Convert large `MEMORY.md` and `TOOLS.md` files into indexes.
+4. Move recurring work domains into `memory/topics/*.md`.
+5. Add smoke tests for persona stability, tool routing, lazy loading, and volatile-fact verification.
+6. Add a maintenance loop that creates pending proposals, never silent core changes.
