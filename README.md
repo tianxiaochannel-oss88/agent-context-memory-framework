@@ -51,6 +51,13 @@ flowchart TD
 - [English design document](docs/en/agent-context-memory-framework-design.md)
 - [中文设计文档](docs/zh/agent-context-memory-framework-design.md)
 
+## Adoption Guides
+
+These guides are intentionally non-destructive. They help users reorganize existing agent memory and context files without overwriting persona, long-term memory, or runtime configuration.
+
+- [OpenClaw adapter guide](docs/en/adapters/openclaw.md) / [中文](docs/zh/adapters/openclaw.md)
+- [Hermes adapter guide](docs/en/adapters/hermes.md) / [中文](docs/zh/adapters/hermes.md)
+
 ## Problem
 
 Long-running agents often accumulate oversized startup files, repeated workspace injection, mixed memory/tool/persona instructions, and stale operational facts. The result is slower response time, higher token cost, truncation risk, and persona drift.
