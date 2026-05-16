@@ -1,6 +1,6 @@
 # Agent Context Memory Framework
 
-A lightweight architecture for long-running AI agents that need stable persona memory, lower bootstrap token cost, lazy-loaded work memory, and controlled self-maintenance.
+Lazy-loaded context, Memory Tree Lite, provenance, and governed self-evolution for long-running AI agents.
 
 ## Why This Exists
 
