@@ -894,8 +894,17 @@ confidence: high
 created_at: 2026-05-16
 updated_at: 2026-05-16
 last_verified: 2026-05-16
+content_hash: sha256:...
+source_hashes:
+  - sha256:...
 stability: mixed
+valid_until: null
 verify_before_use: true
+review_state: candidate
+reviewed_by: null
+conflict_status: none
+conflicts_with: []
+redaction_state: none
 source_refs:
   - memory/daily/2026-05-16.md#deployment-session
   - memory/leaves/2026-05-16-runtime-context.md
@@ -924,6 +933,146 @@ Suggested body:
 - Evidence:
 - Last verified:
 ```
+
+### Governance Additions
+
+Provenance should not only say where a summary came from. It should also describe whether the summary is current, reviewed, conflicted, redacted, and still linked to valid sources.
+
+#### Immutable Raw Layer
+
+Raw records should be treated as append-only evidence:
+
+```text
+daily logs
+transcripts
+raw command output
+original notes
+source snapshots
+```
+
+If a summary is wrong, update or supersede the summary. Do not rewrite the original evidence unless the user explicitly asks to redact or delete it.
+
+#### Stable ID and Content Hash
+
+Every leaf, topic, and digest should have a stable id and content hash.
+
+```yaml
+id: leaf-2026-05-16-runtime-context
+content_hash: sha256:...
+source_hashes:
+  - sha256:...
+```
+
+Use these fields to detect whether a summary was produced from the current source version or from stale evidence.
+
+#### Citation Bundle
+
+For important claims, the system should be able to build a citation bundle:
+
+```text
+summary claim
+-> source_refs
+-> exact source excerpt / line / anchor
+-> source hash
+-> last_verified
+```
+
+The agent may answer from a summary, but it should drill down to source evidence when the claim is important, disputed, or low-confidence.
+
+#### Contradiction Handling
+
+Conflicting sources must not be silently merged.
+
+```yaml
+conflict_status: unresolved
+conflicts_with:
+  - mem-topic-runtime-previous
+resolution: null
+```
+
+Allowed resolution modes:
+
+```text
+user_confirmed
+newer_source
+volatile_fact_reverified
+superseded_by_policy
+```
+
+If the conflict affects core persona, tool routing, safety, deployment, or long-term preference, ask for confirmation before promoting the new summary.
+
+#### Staleness and Expiry
+
+Volatile facts need an expiry policy.
+
+```yaml
+stability: volatile
+valid_until: 2026-05-20
+verify_before_use: true
+```
+
+Use this for ports, processes, service status, deployment status, provider state, model availability, paths, branches, and gateway/API state.
+
+#### Forgetting, Redaction, and Tombstones
+
+Secrets and sensitive private data should not enter the memory tree. If sensitive content was stored, deletion should leave an auditable tombstone rather than a dangling reference.
+
+```yaml
+redaction_state: redacted
+tombstone: true
+redacted_at: 2026-05-16
+redaction_reason: user_request
+```
+
+Rules:
+
+```text
+Do not preserve API keys, cookies, tokens, private raw chat excerpts, or temporary authorization links.
+Do not allow summaries to keep referencing deleted sources.
+When a source is deleted, mark dependent summaries as stale or invalid.
+```
+
+#### Review State
+
+Separate automatic candidates from durable memory.
+
+```yaml
+review_state: candidate
+reviewed_by: null
+approved_at: null
+```
+
+Suggested states:
+
+```text
+candidate:
+  generated but not approved.
+
+reviewed:
+  inspected but not necessarily promoted.
+
+approved:
+  durable and safe to use under its stability rules.
+
+rejected:
+  kept only for audit or removed from active retrieval.
+```
+
+#### Drift Tests
+
+Memory Tree Lite should have specific regression tests:
+
+```text
+summary keeps source_refs
+topic can drill down to leaf summary
+leaf can drill down to raw source
+volatile facts require verification
+conflicting sources are not silently merged
+deleted sources invalidate dependent summaries
+Core Persona is never automatically summarized or rewritten
+```
+
+These tests protect the framework from turning provenance into decorative metadata.
 
 ### Drill-Down Retrieval
 

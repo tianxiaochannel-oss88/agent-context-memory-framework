@@ -92,6 +92,7 @@ This framework keeps the runtime small by separating context into three layers:
 - **More stable persona:** core identity stays hot-loaded, while daily logs and work topics no longer dilute the persona layer.
 - **Better work memory:** recurring domains such as runtime debugging, creative workflows, deployment, and proxy/network issues can each have focused topic memory.
 - **Traceable memory growth:** summaries can point back to their source notes, daily logs, or raw evidence instead of becoming unverifiable claims.
+- **Governed provenance:** summaries can carry hashes, review state, conflict state, expiry rules, and redaction markers.
 - **Less truncation risk:** large files are split into indexes, topic docs, archives, and daily logs.
 - **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
 - **Controlled evolution:** the framework can observe usage and propose improvements, but core persona, hot memory, tool routing, and framework policy still require human approval.

@@ -893,8 +893,17 @@ confidence: high
 created_at: 2026-05-16
 updated_at: 2026-05-16
 last_verified: 2026-05-16
+content_hash: sha256:...
+source_hashes:
+  - sha256:...
 stability: mixed
+valid_until: null
 verify_before_use: true
+review_state: candidate
+reviewed_by: null
+conflict_status: none
+conflicts_with: []
+redaction_state: none
 source_refs:
   - memory/daily/2026-05-16.md#deployment-session
   - memory/leaves/2026-05-16-runtime-context.md
@@ -923,6 +932,146 @@ supersedes: null
 - Evidence:
 - Last verified:
 ```
+
+### Governance Additions
+
+Provenance 不只是说明 summary 来自哪里，还要说明这条 summary 是否当前有效、是否被审查、是否存在冲突、是否被脱敏、是否仍然指向有效来源。
+
+#### Immutable Raw Layer
+
+Raw records 默认作为 append-only evidence：
+
+```text
+daily logs
+transcripts
+raw command output
+original notes
+source snapshots
+```
+
+如果 summary 错了，应该更新或 supersede summary，而不是改写原始证据。只有用户明确要求 redaction 或 deletion 时，才处理原始材料。
+
+#### Stable ID and Content Hash
+
+每个 leaf、topic、digest 都应该有稳定 id 和 content hash。
+
+```yaml
+id: leaf-2026-05-16-runtime-context
+content_hash: sha256:...
+source_hashes:
+  - sha256:...
+```
+
+这些字段用于判断 summary 是基于当前 source 版本生成的，还是基于过期证据生成的。
+
+#### Citation Bundle
+
+对重要结论，系统应该能生成 citation bundle：
+
+```text
+summary claim
+-> source_refs
+-> exact source excerpt / line / anchor
+-> source hash
+-> last_verified
+```
+
+Agent 可以先从 summary 回答，但遇到重要、冲突或低可信结论时，应该下钻到来源证据。
+
+#### Contradiction Handling
+
+冲突来源不能被静默合并。
+
+```yaml
+conflict_status: unresolved
+conflicts_with:
+  - mem-topic-runtime-previous
+resolution: null
+```
+
+允许的 resolution modes：
+
+```text
+user_confirmed
+newer_source
+volatile_fact_reverified
+superseded_by_policy
+```
+
+如果冲突影响 core persona、tool routing、safety、deployment 或长期偏好，必须确认后才能提升新 summary。
+
+#### Staleness and Expiry
+
+易变事实需要过期规则。
+
+```yaml
+stability: volatile
+valid_until: 2026-05-20
+verify_before_use: true
+```
+
+适用于端口、进程、服务状态、部署状态、provider 状态、模型可用性、路径、分支、gateway/API 状态。
+
+#### Forgetting, Redaction, and Tombstones
+
+Secret 和敏感私有数据不应进入 memory tree。如果敏感内容已经进入，删除时应留下可审计 tombstone，避免产生悬空引用。
+
+```yaml
+redaction_state: redacted
+tombstone: true
+redacted_at: 2026-05-16
+redaction_reason: user_request
+```
+
+规则：
+
+```text
+不保存 API keys、cookies、tokens、私密原始聊天摘录、临时授权链接。
+不允许 summary 继续引用已删除 source。
+source 被删除后，依赖它的 summaries 必须标记 stale 或 invalid。
+```
+
+#### Review State
+
+自动候选和长期记忆必须分开。
+
+```yaml
+review_state: candidate
+reviewed_by: null
+approved_at: null
+```
+
+推荐状态：
+
+```text
+candidate:
+  自动生成，但未批准。
+
+reviewed:
+  已检查，但不一定提升。
+
+approved:
+  在 stability 规则范围内可作为长期记忆使用。
+
+rejected:
+  仅用于审计，或从 active retrieval 中移除。
+```
+
+#### Drift Tests
+
+Memory Tree Lite 应该有专门的回归测试：
+
+```text
+summary 保留 source_refs
+topic 可以 drill down 到 leaf summary
+leaf 可以 drill down 到 raw source
+volatile facts 必须要求复核
+conflicting sources 不会被静默合并
+deleted sources 会让依赖 summaries 失效
+Core Persona 永远不会被自动摘要或重写
+```
+
+这些测试防止 provenance 变成装饰性 metadata。
 
 ### Drill-Down Retrieval
 
