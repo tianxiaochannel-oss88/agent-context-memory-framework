@@ -17,6 +17,22 @@ The core problem was not a single broken file. It was gradual context growth:
 
 The design goal is to keep the agent fast and stable without deleting valuable memory. Instead of forcing everything into startup context, the framework keeps only the essential layer hot and moves details into indexed, lazy-loaded files.
 
+## Semi-Automatic Evolution
+
+The framework is designed to become more useful as it is used.
+
+It can observe which topics are searched repeatedly, which daily notes become important, which tool routes are misclassified, which files exceed the context budget, and which persona or workflow tests start to drift. From those signals, it creates pending improvement proposals instead of silently rewriting core files.
+
+In practice, this means the agent can gradually build better topic memory, cleaner tool routing, and more accurate maintenance suggestions while keeping the high-risk layers protected:
+
+- It may automatically observe, search, summarize, test, and propose.
+- It may suggest promoting repeated daily notes into topic memory.
+- It may suggest splitting oversized memory or tool files.
+- It may suggest new smoke tests when recurring failures appear.
+- It must not silently change core persona, hot memory, tool routing, framework policy, or permission boundaries.
+
+The intended result is a framework that gets smarter with real usage, but remains reviewable, reversible, and human-approved where it matters.
+
 ## Design Diagram
 
 ```mermaid
@@ -35,12 +51,13 @@ flowchart TD
     G --> H
 
     H --> I["Read Receipts<br/>Session Summary"]
-    I --> J["Maintenance Loop"]
-    J --> K["Pending Proposals"]
-    K --> L{"Human Approval?"}
+    I --> J["Usage Signals<br/>Repeated topics, stale facts, drift, budget pressure"]
+    J --> K["Maintenance Loop<br/>Analyze + propose"]
+    K --> L["Pending Proposals"]
+    L --> R{"Human Approval?"}
 
-    L -->|Yes| M["Apply with Backup"]
-    L -->|No| N["Keep Candidate"]
+    R -->|Yes| M["Apply with Backup"]
+    R -->|No| N["Keep Candidate"]
     M --> O["Smoke Tests"]
     O --> P["Health Report"]
     M -. rollback .-> Q["Safe Mode"]
