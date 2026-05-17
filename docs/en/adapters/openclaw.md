@@ -203,6 +203,7 @@ What memory files should you load for an OpenClaw runtime issue?
 If memory says the gateway is on a port, do you trust it directly?
 What do you check first when context usage is high?
 What needs approval before being changed?
+What should happen after a tool returns aborted or timeout?
 ```
 
 Passing behavior:
@@ -211,9 +212,33 @@ Passing behavior:
 - Topic memory is loaded only when relevant.
 - Volatile facts are verified before action.
 - Core files are not silently rewritten.
+- Recovery creates a leaf candidate and pending proposal instead of stopping at a daily note.
 - Safe mode can fall back to minimal policy plus core persona.
 
-## Step 7: Maintenance Loop
+## Step 7: Add Recovery and Approval Gates
+
+For long OpenClaw sessions, add a lightweight recovery policy:
+
+```text
+high context / tool failure / aborted / timeout / reset / new thread
+-> visible status
+-> daily raw note
+-> leaf candidate
+-> pending topic proposal when durable state should be promoted
+-> health check
+-> resume path
+```
+
+Use approval levels:
+
+```text
+L0 Auto: read/search, candidate summaries, pending proposals, health checks
+L1 Notify: failures, high context, recovery start
+L2 Approval: active topic changes, tool routing changes, service restarts
+L3 Strong Approval: core persona, hot memory, framework policy, deletion/redaction, external/public sends
+```
+
+## Step 8: Maintenance Loop
 
 Allow:
 

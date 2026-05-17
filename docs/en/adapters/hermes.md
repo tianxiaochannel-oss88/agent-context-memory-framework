@@ -196,6 +196,7 @@ Which memory file should you load for a Hermes runtime issue?
 Would you trust an old dashboard port from memory without checking?
 What can be updated automatically?
 What needs human approval?
+What should happen after an aborted or timed-out tool run?
 ```
 
 Passing behavior:
@@ -204,6 +205,29 @@ Passing behavior:
 - Hermes runtime notes are loaded only when relevant.
 - Runtime facts are verified from current CLI/dashboard state.
 - Core files are not silently rewritten.
+- Recovery and approval gates are followed for long sessions and protected changes.
+
+## Step 6: Recovery and Approval Gates
+
+Use a small recovery workflow for long Hermes sessions or failed tool work:
+
+```text
+failure / high context / reset / resume later
+-> visible status
+-> daily raw note
+-> leaf candidate
+-> pending topic proposal when durable state should be promoted
+-> resume path
+```
+
+Use approval levels:
+
+```text
+L0 Auto: read/search, pending proposals, health checks
+L1 Notify: failures, high context, recovery start
+L2 Approval: active topic changes, tool routing changes, service restarts
+L3 Strong Approval: core persona, hot memory, framework policy, deletion/redaction, external/public sends
+```
 
 ## Result
 

@@ -12,6 +12,7 @@
 - 保护 Persona Agent 的核心人格、语气、关系定位和长期记忆不被稀释。
 - 让 Creative Workflow、deployment、Agent Runtime、proxy 等工作专题按需读取，而不是每轮全量注入。
 - 支持根据实际使用日志生成优化提案，让框架可以半自动迭代。
+- 在高上下文、工具失败、线程切换时提供可执行的 recovery / 回档流程。
 - 所有核心人格、AGENTS、TOOLS 路由、hot memory、framework policy 的修改必须经过确认。
 
 核心原则：
@@ -22,8 +23,9 @@
 + Core Persona 热加载
 + topic memory 按需读取
 + 当前状态复核
++ recovery trigger 处理长上下文和失败任务
 + 自动观察和提案
-+ 人工确认核心变更
++ 四层审批门禁
 + 可测试和可回滚
 ```
 
@@ -693,6 +695,70 @@ pending/tool-updates/
 pending/persona-profile-updates/
 ```
 
+### 15.1 审批门禁
+
+框架应该在跨越风险边界时主动要求审批，而不是依赖用户自己记住每个保护文件。
+
+建议分为四层：
+
+| 层级 | 含义 | 示例 |
+| --- | --- | --- |
+| L0 Auto | 可自动执行 | 读/搜记忆、生成 leaf candidate、生成 pending proposal、跑 health check |
+| L1 Notify | 可继续，但必须可见通知 | tool failure、aborted、timeout、post-processing error、高上下文、recovery 启动 |
+| L2 Approval | 应用前需要审批 | 更新 active topic、promote leaf、修改 tool routing、修改 recurring workflow、重启本地服务 |
+| L3 Strong Approval | 需要明确点名审批 | 修改 core persona、hot memory、framework policy、权限边界、删除/脱敏证据、外部公开发送 |
+
+L2 推荐提示格式：
+
+```text
+需要审批：
+- Target: <files/actions>
+- Why: <reason>
+- Risk: <main risk>
+- Rollback: <how to revert>
+- Proposed action: <exact next step>
+
+你批准我执行吗？
+```
+
+L3 推荐提示格式：
+
+```text
+这是强审批项，因为会改 <protected target>。
+请明确回复：批准修改 <target>。
+```
+
+`继续`、`可以`、`直接做` 这类泛化许可不应该自动等同于 L3 审批，除非明确点名了被保护目标。
+
+### 15.2 Recovery Trigger Workflow
+
+Recovery / 回档 应该是固定流程，不只是随手写一条 daily note。
+
+触发条件：
+
+```text
+context pressure 很高
+tool work failed / aborted / timeout / ambiguous delivery state
+用户要求 compact / reset / new thread / resume later
+项目需要可靠恢复点
+```
+
+重大事件的必需产物：
+
+```text
+可见状态通知
+-> 项目 recovery 文件或 resume note
+-> raw daily log
+-> 带 provenance 的 leaf candidate
+-> 需要长期保留时生成 pending topic proposal
+-> framework health check
+-> 精确 resume path
+```
+
+如果事件影响项目状态、已接受资产、失败规则或下一轮恢复路径，只写 daily memory 是不完整的。
+
+Recovery 可以自动生成 daily note、leaf candidate 和 pending proposal；但真正应用 L2 变更前仍需审批，L3 变更前必须明确点名审批。
+
 ## 16. 防自我递归规则
 
 框架可以提出框架升级建议，但不能自动修改自己的权限边界。
@@ -1216,7 +1282,7 @@ read receipt summary
 实际使用日志
 -> 每日梦境分析
 -> pending proposals
--> 用户确认
+-> 审批门禁
 -> apply update
 -> smoke tests
 -> backup / rollback ready
@@ -1229,6 +1295,7 @@ read receipt summary
 自动检索。
 自动提案。
 自动测试。
+失败和 recovery 触发时主动通知。
 
 不自动改 Core Persona。
 不自动改 AGENTS。

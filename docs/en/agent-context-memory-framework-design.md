@@ -12,6 +12,7 @@ Core goals:
 - Preserve the agent's core persona, tone, relationship model, and durable memory.
 - Load work-domain memory only when needed instead of injecting every topic on every turn.
 - Generate framework-improvement proposals from real usage logs.
+- Recover safely from high context, failed tools, and thread handoffs.
 - Require explicit approval before changing core persona, hot memory, tool routing, or framework policy.
 
 Core principle:
@@ -22,8 +23,9 @@ thin startup
 + hot core persona
 + topic memory on demand
 + fresh verification for volatile state
++ recovery triggers for long context and failed work
 + automatic observation and proposals
-+ human approval for core changes
++ four-level approval gates for core changes
 + testable and reversible updates
 ```
 
@@ -693,6 +695,70 @@ pending/tool-updates/
 pending/persona-profile-updates/
 ```
 
+### 15.1 Approval Gates
+
+The framework should ask proactively when a change crosses a risk boundary. Approval should not depend on the user remembering every protected file.
+
+Use four levels:
+
+| Level | Meaning | Examples |
+| --- | --- | --- |
+| L0 Auto | Allowed without asking | Read/search memory, create leaf candidates, generate pending proposals, run health checks |
+| L1 Notify | Allowed, but must be visible before continuing | Tool failure, aborted run, timeout, post-processing error, high context pressure, recovery starting |
+| L2 Approval | Ask before applying | Update active topic memory, promote a leaf, change tool routing, change recurring workflow behavior, restart local services |
+| L3 Strong Approval | Require explicit target-specific approval | Modify core persona, hot memory, framework policy, permission boundaries, delete/redact evidence, external/public sends |
+
+Suggested prompt for L2:
+
+```text
+Approval needed:
+- Target: <files/actions>
+- Why: <reason>
+- Risk: <main risk>
+- Rollback: <how to revert>
+- Proposed action: <exact next step>
+
+Do you approve?
+```
+
+Suggested prompt for L3:
+
+```text
+This is a strong-approval item because it changes <protected target>.
+Please explicitly approve changing <target>.
+```
+
+Generic phrases such as "continue" or "do it" should not count as L3 approval unless the protected target is named.
+
+### 15.2 Recovery Trigger Workflow
+
+Recovery should be a fixed workflow, not a casual memory note.
+
+Run recovery when:
+
+```text
+context pressure is high
+tool work fails, aborts, times out, or has ambiguous delivery state
+the user asks to compact, reset, start a new thread, or resume later
+a project needs a durable handoff point
+```
+
+Required outputs for significant incidents:
+
+```text
+visible user status
+-> project recovery file or resume note
+-> raw daily log
+-> leaf candidate with provenance
+-> pending topic proposal when durable state should be promoted
+-> framework health check
+-> exact resume path
+```
+
+Daily-only recovery is incomplete when the incident affects durable project state, accepted assets, failure rules, or future resume instructions.
+
+Recovery may create daily notes, leaf candidates, and pending proposals automatically. It must still ask before applying L2 changes and require target-specific approval before L3 changes.
+
 ## 16. Anti-Recursion Rule
 
 The framework may propose framework upgrades, but it must not silently change its own permission boundaries.
@@ -1217,7 +1283,7 @@ read receipt summary
 real usage logs
 -> daily maintenance analysis
 -> pending proposals
--> user approval
+-> approval gate
 -> apply update
 -> smoke tests
 -> backup / rollback ready
@@ -1230,6 +1296,7 @@ observe automatically.
 retrieve automatically.
 propose automatically.
 test automatically.
+notify on failures and recovery triggers.
 
 do not automatically change Core Persona.
 do not automatically change AGENTS.

@@ -11,6 +11,8 @@ It is safe to read and copy from, but do not copy it over a real workspace witho
 - Topic routing through `memory/topics/index.md`
 - Memory Tree Lite with `memory/leaves/` and `memory/digests/`
 - Provenance metadata with `source_refs`, `derived_from`, `review_state`, and `verify_before_use`
+- Approval gates under `docs/framework/policy.md`
+- Recovery trigger workflow under `docs/framework/recovery.md`
 - Smoke-test prompts under `tests/golden-prompts/`
 
 ## Fake Scenario

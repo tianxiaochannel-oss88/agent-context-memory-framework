@@ -194,6 +194,7 @@ Hermes runtime 问题应该读取哪个 memory 文件？
 你会不检查就相信旧 dashboard 端口吗？
 哪些内容可以自动更新？
 哪些内容必须人工确认？
+tool aborted 或 timeout 后应该怎么处理？
 ```
 
 通过标准：
@@ -202,6 +203,29 @@ Hermes runtime 问题应该读取哪个 memory 文件？
 - Hermes runtime notes 只在相关任务里读取。
 - Runtime facts 来自当前 CLI/dashboard 状态复核。
 - 核心文件不会被静默改写。
+- 长会话和受保护变更遵守 recovery 与审批门禁。
+
+## Step 6：Recovery 和审批门禁
+
+长 Hermes 会话或工具失败时使用轻量 recovery workflow：
+
+```text
+failure / high context / reset / resume later
+-> 可见状态通知
+-> daily raw note
+-> leaf candidate
+-> 需要长期保留时生成 pending topic proposal
+-> resume path
+```
+
+审批层级：
+
+```text
+L0 Auto: 读/搜、pending proposals、health checks
+L1 Notify: failures、高上下文、recovery start
+L2 Approval: active topic changes、tool routing changes、service restarts
+L3 Strong Approval: core persona、hot memory、framework policy、删除/脱敏、外部公开发送
+```
 
 ## 结果
 

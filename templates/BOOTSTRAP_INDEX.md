@@ -43,3 +43,18 @@ raw / daily
 ```
 
 Core persona is not part of automatic promotion.
+
+## Recovery Trigger Rule
+
+Read `docs/framework/recovery.md` when:
+
+- context pressure is high
+- tool work fails, aborts, times out, or has ambiguous delivery state
+- the user asks to compact, reset, start a new thread, or resume later
+- a significant project state needs a durable handoff
+
+Significant recovery should not stop at daily notes. Create a leaf candidate and pending topic proposal when durable state should survive.
+
+## Approval Gate Rule
+
+Read `docs/framework/policy.md` before changing protected files or applying pending proposals.

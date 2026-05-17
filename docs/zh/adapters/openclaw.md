@@ -203,6 +203,7 @@ OpenClaw runtime 问题应该读取哪些 memory 文件？
 如果 memory 里记录了 gateway 端口，你会直接相信吗？
 context usage 很高时先检查什么？
 哪些内容修改前必须确认？
+tool 返回 aborted 或 timeout 后应该怎么处理？
 ```
 
 通过标准：
@@ -211,9 +212,33 @@ context usage 很高时先检查什么？
 - topic memory 只在命中时读取。
 - 易变事实先复核再行动。
 - 核心文件不会被静默改写。
+- recovery 会生成 leaf candidate 和 pending proposal，而不是只停在 daily note。
 - safe mode 能回退到最小策略和 core persona。
 
-## Step 7：维护循环
+## Step 7：增加 Recovery 和审批门禁
+
+长 OpenClaw 会话建议增加轻量 recovery policy：
+
+```text
+高上下文 / tool failure / aborted / timeout / reset / new thread
+-> 可见状态通知
+-> daily raw note
+-> leaf candidate
+-> 需要长期保留时生成 pending topic proposal
+-> health check
+-> resume path
+```
+
+审批层级：
+
+```text
+L0 Auto: 读/搜、candidate summaries、pending proposals、health checks
+L1 Notify: failures、高上下文、recovery start
+L2 Approval: active topic changes、tool routing changes、service restarts
+L3 Strong Approval: core persona、hot memory、framework policy、删除/脱敏、外部公开发送
+```
+
+## Step 8：维护循环
 
 允许自动：
 

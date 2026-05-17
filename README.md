@@ -4,7 +4,7 @@ A practical context and memory hygiene framework for long-running AI agents.
 
 It helps durable assistants stay fast, stable, traceable, and safe as their persona, tools, work notes, and memory grow over time.
 
-> Thin startup. Hot core persona. Lazy-loaded topic memory. Provenance. Live verification for volatile facts. Human-reviewed self-evolution.
+> Thin startup. Hot core persona. Lazy-loaded topic memory. Recovery triggers. Approval gates. Provenance. Live verification for volatile facts. Human-reviewed self-evolution.
 
 ## Documentation
 
@@ -43,8 +43,9 @@ thin startup
 + searchable cold archives
 + fresh verification for volatile state
 + provenance-aware summaries
++ recovery triggers for long context or failed work
 + pending proposals for risky changes
-+ human approval for core evolution
++ four-level approval gates for self-evolution
 ```
 
 ### Context Layers
@@ -66,6 +67,7 @@ The hot layer should tell the agent where to look. It should not contain every h
 - **Better work memory:** recurring domains such as runtime debugging, creative workflows, deployment, and proxy/network issues can each have focused topic memory.
 - **Traceable memory growth:** summaries can point back to their source notes, daily logs, or raw evidence instead of becoming unverifiable claims.
 - **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
+- **Recoverable long sessions:** high context pressure, tool failures, or thread handoffs can trigger a fixed recovery workflow.
 - **Controlled evolution:** agents can propose improvements, but high-risk changes still require human approval.
 - **Rollback-ready maintenance:** major framework changes should include backups, smoke tests, and health reports.
 
@@ -76,8 +78,9 @@ The hot layer should tell the agent where to look. It should not contain every h
 - Route recurring domains through topic memory instead of hot startup files.
 - Use a lightweight memory tree so summaries can be compressed without losing provenance.
 - Treat memory as hints for volatile facts; verify current state before acting.
+- Treat recovery as a workflow, not a note: daily log, leaf candidate, topic proposal, health check, and resume path.
 - Let the framework observe usage and generate candidate updates.
-- Require human approval before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
+- Use approval gates before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
 - Keep major framework changes backed up, tested, and reversible.
 
 ## Who Should Use This
@@ -298,6 +301,40 @@ Agents should not silently change:
 - Security rules.
 - Runtime/provider routing.
 
+### Approval gates
+
+Use approval levels so the agent asks at the right time instead of relying on the user to remember every boundary.
+
+| Level | Meaning | Examples |
+| --- | --- | --- |
+| L0 Auto | Safe to do and report briefly | Read/search memory, create candidate leaf summaries, generate pending proposals, run health checks |
+| L1 Notify | Safe to continue, but must be visible | Tool failure, aborted run, timeout, high context pressure, recovery workflow starting |
+| L2 Approval | Ask before applying | Update topic memory, promote a leaf into active memory, change tool routing, restart a local service |
+| L3 Strong Approval | Require explicit target-specific approval | Modify core persona, hot memory, framework policy, permission boundaries, delete/redact evidence, external/public sends |
+
+Generic phrases like "continue" or "do it" should not count as L3 approval unless the protected target is named.
+
+### Recovery triggers
+
+Long-running agent sessions need a recovery path that is stronger than "write a daily note".
+
+Trigger recovery when:
+
+- context pressure is high enough to make long work risky
+- a tool returns `aborted`, `timeout`, `502`, post-processing errors, or ambiguous delivery state
+- the user asks to compact, reset, start a new thread, or resume later
+- a project needs a durable handoff point
+
+For significant incidents, recovery should create or verify:
+
+- visible user status
+- project recovery file or resume note
+- raw daily log
+- leaf candidate with provenance
+- pending topic proposal when durable state should be promoted
+- health check result
+- exact resume path
+
 ### Must be verified live
 
 Memory should be treated as a hint, not truth, for volatile facts such as:
@@ -364,7 +401,10 @@ flowchart TD
     I --> J[Usage Signals<br/>Repeated topics, stale facts, drift, budget pressure]
     J --> K[Maintenance Loop<br/>Analyze + propose]
     K --> L[Pending Proposals]
-    L --> R{Human Approval?}
+    H --> S[Recovery Trigger<br/>High context, failure, handoff]
+    S --> T[Daily + Leaf Candidate<br/>Pending Topic Proposal]
+    T --> K
+    L --> R{Approval Gate<br/>L0/L1/L2/L3}
 
     R -->|Yes| M[Apply with Backup]
     R -->|No| N[Keep Candidate]

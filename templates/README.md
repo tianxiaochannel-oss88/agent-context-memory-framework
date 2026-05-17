@@ -14,4 +14,6 @@ They are intentionally generic. They should not be used to overwrite existing pe
 - `topic-memory.md` - topic memory template.
 - `leaf-summary.md` - Memory Tree Lite leaf summary template.
 - `global-digest.md` - project/global digest template.
+- `framework-policy.md` - approval gates and protected-change policy.
+- `recovery-workflow.md` - recovery trigger checklist for long context, failures, and handoffs.
 - `framework-health-report.md` - framework health report template.
