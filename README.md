@@ -1,111 +1,73 @@
 # Agent Context Memory Framework
 
-Lazy-loaded context, Memory Tree Lite, provenance, and governed self-evolution for long-running AI agents.
+A practical context and memory hygiene framework for long-running AI agents.
 
-## Why This Exists
+It helps durable assistants stay fast, stable, traceable, and safe as their persona, tools, work notes, and memory grow over time.
 
-This framework came from practical issues observed while running an OpenClaw-style local agent with persona memory, workspace bootstrap files, tool instructions, topic notes, and daily work logs.
-
-The core problem was not a single broken file. It was gradual context growth:
-
-- Bootstrap and workspace files could be re-injected across turns, wasting tokens.
-- `MEMORY.md`, `TOOLS.md`, and persona notes could become overloaded with mixed responsibilities.
-- Large startup files increased truncation risk, especially for long-term memory.
-- Persona instructions, tool rules, deployment notes, and daily logs competed for the same hot context.
-- Operational facts such as ports, processes, model state, deployment status, and proxy routing could become stale if memory was trusted without verification.
-- Framework updates were useful, but unsafe if the agent could silently modify its own persona, hot memory, or routing policy.
-
-The design goal is to keep the agent fast and stable without deleting valuable memory. Instead of forcing everything into startup context, the framework keeps only the essential layer hot and moves details into indexed, lazy-loaded files.
-
-## Semi-Automatic Evolution
-
-The framework is designed to become more useful as it is used.
-
-It can observe which topics are searched repeatedly, which daily notes become important, which tool routes are misclassified, which files exceed the context budget, and which persona or workflow tests start to drift. From those signals, it creates pending improvement proposals instead of silently rewriting core files.
-
-In practice, this means the agent can gradually build better topic memory, cleaner tool routing, and more accurate maintenance suggestions while keeping the high-risk layers protected:
-
-- It may automatically observe, search, summarize, test, and propose.
-- It may suggest promoting repeated daily notes into topic memory.
-- It may suggest splitting oversized memory or tool files.
-- It may suggest new smoke tests when recurring failures appear.
-- It must not silently change core persona, hot memory, tool routing, framework policy, or permission boundaries.
-
-The intended result is a framework that gets smarter with real usage, but remains reviewable, reversible, and human-approved where it matters.
-
-## Design Diagram
-
-```mermaid
-flowchart TD
-    A["User Request"] --> B["Intent Router"]
-    B --> C["Context Pack Builder"]
-
-    C --> D["Hot Layer<br/>Core policy, persona, memory index, tool index"]
-    C --> E["Warm Layer<br/>Topic memory, profile, tool docs"]
-    C --> F["Cold Layer<br/>Daily logs, archives, transcripts"]
-    C --> G["Evidence Layer<br/>Fresh local verification"]
-
-    D --> H["Agent Runtime"]
-    E --> H
-    F --> H
-    G --> H
-
-    H --> I["Read Receipts<br/>Session Summary"]
-    I --> J["Usage Signals<br/>Repeated topics, stale facts, drift, budget pressure"]
-    J --> K["Maintenance Loop<br/>Analyze + propose"]
-    K --> L["Pending Proposals"]
-    L --> R{"Human Approval?"}
-
-    R -->|Yes| M["Apply with Backup"]
-    R -->|No| N["Keep Candidate"]
-    M --> O["Smoke Tests"]
-    O --> P["Health Report"]
-    M -. rollback .-> Q["Safe Mode"]
-```
+> Thin startup. Hot core persona. Lazy-loaded topic memory. Provenance. Live verification for volatile facts. Human-reviewed self-evolution.
 
 ## Documentation
 
 - [English design document](docs/en/agent-context-memory-framework-design.md)
 - [中文设计文档](docs/zh/agent-context-memory-framework-design.md)
-
-## Adoption Guides
-
-These guides are intentionally non-destructive. They help users reorganize existing agent memory and context files without overwriting persona, long-term memory, or runtime configuration.
-
 - [OpenClaw adapter guide](docs/en/adapters/openclaw.md) / [中文](docs/zh/adapters/openclaw.md)
 - [Hermes adapter guide](docs/en/adapters/hermes.md) / [中文](docs/zh/adapters/hermes.md)
+- [Templates](templates/)
+- [Basic example workspace](examples/basic-agent-workspace/)
+- [Announcement variants](docs/announcement.md)
 
-## Templates and Example
+## Why This Exists
 
-Use these when adapting the design to a real agent workspace:
+Long-running agents often start simple: one persona file, one memory file, one tool note, and a few workspace instructions.
 
-- [Templates](templates/) - copyable starting points for hot indexes, persona core, topic memory, leaf summaries, digests, and health reports.
-- [Basic example workspace](examples/basic-agent-workspace/) - a fake, minimal workspace showing how the pieces fit together.
+Then they accumulate:
 
-These are implementation aids, not mandatory runtime components.
+- Bootstrap and workspace files that are injected repeatedly.
+- Large `MEMORY.md`, `TOOLS.md`, or instruction files with mixed responsibilities.
+- Persona notes competing with deployment notes, tool manuals, topic notes, and daily logs.
+- Stale operational facts such as ports, processes, provider state, model state, branches, and deployment status.
+- Useful self-improvement ideas that are risky if applied silently.
 
-## Problem
+A bigger context window helps, but it does not solve the underlying hygiene problem. If every detail is kept hot forever, the agent becomes slower, more expensive, more prone to truncation, and easier to confuse.
 
-Long-running agents often accumulate oversized startup files, repeated workspace injection, mixed memory/tool/persona instructions, and stale operational facts. The result is slower response time, higher token cost, truncation risk, and persona drift.
+This framework keeps valuable memory without forcing all of it into startup context.
 
-This framework keeps the runtime small by separating context into three layers:
+## The Core Idea
 
-- **Hot layer:** minimal behavior policy, core persona, memory index, and tool index. Always visible.
-- **Warm layer:** topic memory, persona profile, and detailed tool docs. Loaded only when relevant.
-- **Cold layer:** daily logs, archives, transcripts, and raw evidence. Searched on demand.
+Separate context by responsibility and risk.
+
+```text
+thin startup
++ hot core persona
++ lazy-loaded topic memory
++ searchable cold archives
++ fresh verification for volatile state
++ provenance-aware summaries
++ pending proposals for risky changes
++ human approval for core evolution
+```
+
+### Context Layers
+
+| Layer | Purpose | Examples |
+| --- | --- | --- |
+| Hot | Always available, compact, high-priority | Core behavior policy, core persona, memory index, tool index |
+| Warm | Loaded only when relevant | Topic memory, profile notes, detailed tool docs, workflow notes |
+| Cold | Searched on demand | Daily logs, archives, transcripts, raw evidence |
+| Evidence | Verified live before action | Ports, processes, provider state, current branches, deployment state, model state |
+
+The hot layer should tell the agent where to look. It should not contain every historical detail.
 
 ## Benefits
 
 - **Lower token cost:** repeated bootstrap content is reduced, and detailed files are loaded only when relevant.
 - **Faster responses:** the agent starts from a smaller context pack and spends less time processing unrelated memory.
-- **More stable persona:** core identity stays hot-loaded, while daily logs and work topics no longer dilute the persona layer.
+- **More stable persona:** core identity stays hot-loaded while daily logs and work topics no longer dilute the persona layer.
 - **Better work memory:** recurring domains such as runtime debugging, creative workflows, deployment, and proxy/network issues can each have focused topic memory.
 - **Traceable memory growth:** summaries can point back to their source notes, daily logs, or raw evidence instead of becoming unverifiable claims.
-- **Governed provenance:** summaries can carry hashes, review state, conflict state, expiry rules, and redaction markers.
-- **Less truncation risk:** large files are split into indexes, topic docs, archives, and daily logs.
 - **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
-- **Controlled evolution:** the framework can observe usage and propose improvements, but core persona, hot memory, tool routing, and framework policy still require human approval.
-- **Rollback-ready changes:** major updates are expected to include backups, smoke tests, and health reports.
+- **Controlled evolution:** agents can propose improvements, but high-risk changes still require human approval.
+- **Rollback-ready maintenance:** major framework changes should include backups, smoke tests, and health reports.
 
 ## Core Principles
 
@@ -115,10 +77,156 @@ This framework keeps the runtime small by separating context into three layers:
 - Use a lightweight memory tree so summaries can be compressed without losing provenance.
 - Treat memory as hints for volatile facts; verify current state before acting.
 - Let the framework observe usage and generate candidate updates.
-- Require human approval before changing core persona, hot memory, tool routing, or framework policy.
+- Require human approval before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
 - Keep major framework changes backed up, tested, and reversible.
 
-## Suggested Repository Layout
+## Who Should Use This
+
+This framework is useful for:
+
+- Long-running personal AI assistants.
+- Local assistants with durable persona and user preferences.
+- OpenClaw-style or Hermes-style workspaces.
+- Coding agents with project conventions and recurring tool notes.
+- Creative or research agents with large topic memory.
+- Operations/deployment agents where stale facts can cause mistakes.
+- Any agent that needs memory growth without silent policy/persona drift.
+
+It is less useful for one-shot prompts, stateless bots, or very small projects with no durable memory.
+
+## What This Is / Is Not
+
+This project is:
+
+- A reference design for context and memory organization.
+- A set of safe adoption patterns.
+- A collection of copyable templates.
+- Adapter guidance for existing agent workspaces.
+- A safety model for governed self-evolution.
+
+This project is not:
+
+- A mandatory runtime.
+- A vector database.
+- A one-click installer.
+- A secret manager.
+- A replacement for your existing agent framework.
+- A license to let agents silently rewrite their own identity, policy, or permissions.
+
+## Quick Start
+
+Use this as a conservative migration path. Do not overwrite an existing agent workspace blindly.
+
+### 1. Back up first
+
+```bash
+mkdir -p backups/framework/$(date +%Y%m%d-%H%M%S)
+cp AGENTS.md MEMORY.md TOOLS.md backups/framework/$(date +%Y%m%d-%H%M%S)/ 2>/dev/null
+```
+
+If your workspace has persona files, routing files, or local policy files, include them too.
+
+### 2. Inventory current hot context
+
+```bash
+wc -c AGENTS.md MEMORY.md TOOLS.md 2>/dev/null
+find . -maxdepth 3 -type f | sort
+```
+
+Classify what you find:
+
+```text
+core behavior rules      -> AGENTS.md
+core persona             -> memory/persona/core.md
+stable user preferences  -> MEMORY.md or memory/persona/profile.md
+tool details             -> docs/tools/*.md
+recurring work domains   -> memory/topics/*.md
+daily logs               -> memory/daily/*.md
+archives/raw evidence    -> cold storage, searched on demand
+```
+
+### 3. Add a bootstrap index
+
+Create a small `BOOTSTRAP_INDEX.md` that routes the agent instead of loading every detail.
+
+```md
+# Bootstrap Index
+
+## Always Load
+
+- AGENTS.md - minimal behavior and safety policy.
+- MEMORY.md - hot memory index.
+- TOOLS.md - thin tool index.
+- memory/persona/core.md - core persona.
+
+## Load on Demand
+
+- memory/topics/index.md - topic routing.
+- memory/topics/runtime.md - runtime and context notes.
+- memory/topics/deployment.md - deployment workflows.
+- docs/tools/*.md - detailed tool instructions.
+
+## Volatile Facts
+
+Verify current ports, processes, provider state, model state, deployment state, branches, and paths before acting.
+```
+
+### 4. Slim hot files
+
+Keep hot files short and index-like.
+
+- `AGENTS.md`: behavior constitution, safety boundaries, lazy-loading rule.
+- `MEMORY.md`: stable preferences, memory routing, topic index pointer.
+- `TOOLS.md`: tool index, risk level, detailed docs path.
+- `memory/persona/core.md`: core persona that must remain visible.
+
+Move long details into topic files and tool docs. Do not delete source memory during the first pass.
+
+### 5. Add topic memory
+
+Create focused files for recurring work domains:
+
+```text
+memory/topics/index.md
+memory/topics/runtime.md
+memory/topics/deployment.md
+memory/topics/proxy.md
+memory/topics/creative-workflows.md
+```
+
+Each topic should include durable notes, known pitfalls, verification rules, and source references where useful.
+
+### 6. Add provenance
+
+When summarizing memory, preserve enough metadata to audit it later.
+
+Useful fields:
+
+```yaml
+source_refs:
+  - memory/daily/2026-01-01.md:12-18
+derived_from:
+  - session:example-session-id
+confidence: medium
+last_verified: 2026-01-01
+review_state: proposed
+```
+
+The goal is not bureaucracy. The goal is to avoid unverifiable memory claims.
+
+### 7. Add a framework health check
+
+At minimum, periodically check:
+
+- Hot file sizes.
+- Whether topic routing still matches real work.
+- Whether daily notes should be promoted into topic memory.
+- Whether any volatile fact is being treated as permanent memory.
+- Whether persona/tool-routing/policy changes are waiting in `pending/`.
+
+See [framework health report template](templates/framework-health-report.md).
+
+## Recommended Repository Layout
 
 ```text
 AGENTS.md
@@ -135,6 +243,7 @@ memory/
     index.md
     runtime.md
     deployment.md
+    proxy.md
     creative-workflows.md
   daily/
   leaves/
@@ -148,6 +257,7 @@ pending/
   memory-updates/
   tool-updates/
   framework-updates/
+  persona-profile-updates/
 
 reports/
   framework-health.md
@@ -160,9 +270,148 @@ backups/
   framework/
 ```
 
-## Status
+## Safety Model
 
-This is a design-first public draft. It is intentionally implementation-agnostic and can be adapted to different agent runtimes, coding assistants, chat agents, and local automation systems.
+The framework is designed to evolve, but not silently mutate high-risk layers.
+
+### Safe to automate
+
+Agents may:
+
+- Observe which topics are searched repeatedly.
+- Detect oversized hot files.
+- Summarize daily notes into candidate leaf summaries.
+- Suggest topic-memory promotions.
+- Suggest tool-doc splits.
+- Suggest smoke tests when repeated failures appear.
+- Generate pending improvement proposals.
+
+### Requires human approval
+
+Agents should not silently change:
+
+- Core persona.
+- Hot memory.
+- Tool routing.
+- Permission boundaries.
+- Framework policy.
+- Security rules.
+- Runtime/provider routing.
+
+### Must be verified live
+
+Memory should be treated as a hint, not truth, for volatile facts such as:
+
+- Ports and processes.
+- Current model/provider state.
+- Gateway status.
+- Deployment status.
+- Git/SVN branches and revisions.
+- Local paths that may have moved.
+- External service availability.
+
+## Memory Tree Lite
+
+The framework encourages a lightweight memory compression path:
+
+```text
+raw daily notes
+-> leaf summaries
+-> topic proposals
+-> approved topic memory
+-> periodic digest
+```
+
+Each step should preserve source references when practical.
+
+This lets agents keep long-term knowledge compact without losing the ability to trace important claims back to raw notes.
+
+## Semi-Automatic Evolution
+
+The framework can become more useful as it is used.
+
+It may notice:
+
+- A topic is repeatedly searched.
+- A tool route is repeatedly misclassified.
+- A hot file exceeds the desired context budget.
+- A daily note is repeatedly recalled.
+- A workflow has recurring failures.
+- A persona or tool-routing smoke test starts drifting.
+
+From those signals, it creates pending proposals instead of silently rewriting core files.
+
+The intended result is an agent that improves its workspace hygiene while remaining reviewable, reversible, and human-approved where it matters.
+
+## Design Diagram
+
+```mermaid
+flowchart TD
+    A[User Request] --> B[Intent Router]
+    B --> C[Context Pack Builder]
+
+    C --> D[Hot Layer<br/>Core policy, persona, memory index, tool index]
+    C --> E[Warm Layer<br/>Topic memory, profile, tool docs]
+    C --> F[Cold Layer<br/>Daily logs, archives, transcripts]
+    C --> G[Evidence Layer<br/>Fresh local verification]
+
+    D --> H[Agent Runtime]
+    E --> H
+    F --> H
+    G --> H
+
+    H --> I[Read Receipts<br/>Session Summary]
+    I --> J[Usage Signals<br/>Repeated topics, stale facts, drift, budget pressure]
+    J --> K[Maintenance Loop<br/>Analyze + propose]
+    K --> L[Pending Proposals]
+    L --> R{Human Approval?}
+
+    R -->|Yes| M[Apply with Backup]
+    R -->|No| N[Keep Candidate]
+    M --> O[Smoke Tests]
+    O --> P[Health Report]
+    M -. rollback .-> Q[Safe Mode]
+```
+
+## Adoption Guides
+
+These guides are intentionally non-destructive. They help users reorganize existing agent memory and context files without overwriting persona, long-term memory, secrets, or runtime configuration.
+
+### OpenClaw Adapter
+
+The [OpenClaw adapter guide](docs/en/adapters/openclaw.md) explains how to apply this pattern to an existing OpenClaw-style workspace.
+
+It is intentionally non-destructive:
+
+- Back up first.
+- Record current file sizes.
+- Do not edit secrets or provider credentials.
+- Do not delete memory in the first pass.
+- Do not automatically rewrite the core persona.
+- Treat runtime facts as volatile and verify them live.
+
+Chinese version: [OpenClaw 适配指南](docs/zh/adapters/openclaw.md)
+
+### Hermes Adapter
+
+The [Hermes adapter guide](docs/en/adapters/hermes.md) provides the same conservative migration pattern for Hermes-style agent workspaces.
+
+Chinese version: [Hermes 适配指南](docs/zh/adapters/hermes.md)
+
+## Templates and Example
+
+Use these when adapting the design to a real workspace:
+
+- [Templates](templates/) - copyable starting points for hot indexes, persona core, topic memory, leaf summaries, digests, and health reports.
+- [Basic example workspace](examples/basic-agent-workspace/) - a fake, minimal workspace showing how the pieces fit together.
+
+These are implementation aids, not mandatory runtime components.
+
+## Example Result
+
+In one local OpenClaw-style workspace, splitting oversized hot files into a compact memory index, thin tool index, topic notes, tool docs, and archives reduced the approximate hot injected context by about two thirds.
+
+This is a practical case study, not a formal benchmark. Your result will depend on runtime behavior, workspace size, retrieval strategy, and what your agent injects by default.
 
 ## Recommended First Implementation
 
@@ -175,6 +424,35 @@ Start small:
 5. Add smoke tests for persona stability, tool routing, lazy loading, and volatile-fact verification.
 6. Add provenance fields such as `source_refs`, `derived_from`, `confidence`, and `last_verified`.
 7. Add a maintenance loop that creates pending proposals, never silent core changes.
-8. Evaluate vector search and reranking later only when the Markdown corpus becomes large enough to need retrieval acceleration.
+8. Evaluate vector search and reranking later, only when the Markdown corpus becomes large enough to need retrieval acceleration.
 
 The [basic example workspace](examples/basic-agent-workspace/) is a safe reference shape. Do not copy it over an existing workspace without first backing up and adapting the placeholders.
+
+## Roadmap
+
+Possible next steps:
+
+- Add a lightweight context budget report.
+- Add more golden prompt tests for persona, tool routing, and volatile-fact verification.
+- Add memory promotion helper scripts.
+- Add more adapter guides for other agent runtimes.
+- Add optional checks for oversized hot files and missing provenance.
+- Add examples for team/workspace variants.
+
+## Contributing
+
+Issues, examples, adapter improvements, and safety feedback are welcome.
+
+Please do not post secrets, provider credentials, private memory contents, raw personal logs, or sensitive local paths in public issues.
+
+When proposing changes, prefer:
+
+- Concrete use cases.
+- Minimal, reversible adoption steps.
+- Clear safety boundaries.
+- Backward-compatible patterns.
+- Examples that can be understood without private context.
+
+## Status
+
+This is a design-first public draft. It is intentionally implementation-agnostic and can be adapted to different agent runtimes, coding assistants, chat agents, and local automation systems.
