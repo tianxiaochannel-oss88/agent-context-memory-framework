@@ -33,6 +33,19 @@ For significant incidents, create or verify:
 
 Daily-only recovery is incomplete for incidents that affect durable project state, accepted assets, failure rules, or future resume instructions.
 
+## Completion Gate
+
+Do not say `recovery complete` until every required output has been checked.
+
+If an item is missing, report it clearly:
+
+```text
+Recovery body is written, but the framework item still missing is: <item>.
+I will complete it before declaring recovery complete.
+```
+
+If the health check passes with warnings, name the warnings explicitly.
+
 ## Approval Gates
 
 Recovery may automatically create daily notes, leaf candidates, and pending proposals.

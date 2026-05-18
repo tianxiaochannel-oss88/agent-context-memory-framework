@@ -24,6 +24,7 @@ Hot memory index. Keep this file compact.
 - Leaf summaries: `memory/leaves/`
 - Raw daily logs: `memory/daily/`
 - Project/global digests: `memory/digests/`
+- Hot promotion rule: daily logs and long event records become leaf/topic/digest entries first; hot memory gets only short indexes and source pointers.
 
 ## Read Rule
 

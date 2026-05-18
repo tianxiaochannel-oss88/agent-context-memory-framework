@@ -76,9 +76,11 @@ The hot layer should tell the agent where to look. It should not contain every h
 - Keep the core persona always visible.
 - Keep `AGENTS.md`, `TOOLS.md`, and `MEMORY.md` lightweight.
 - Route recurring domains through topic memory instead of hot startup files.
+- Do not promote raw daily logs directly into hot memory; use short indexes and source pointers.
 - Use a lightweight memory tree so summaries can be compressed without losing provenance.
 - Treat memory as hints for volatile facts; verify current state before acting.
 - Treat recovery as a workflow, not a note: daily log, leaf candidate, topic proposal, health check, and resume path.
+- Do not say recovery is complete until the recovery completion gate has been checked.
 - Let the framework observe usage and generate candidate updates.
 - Use approval gates before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
 - Keep major framework changes backed up, tested, and reversible.
@@ -184,6 +186,13 @@ Keep hot files short and index-like.
 - `memory/persona/core.md`: core persona that must remain visible.
 
 Move long details into topic files and tool docs. Do not delete source memory during the first pass.
+
+Hot memory promotion gate:
+
+- Keep promoted hot entries short, preferably one or two lines.
+- Store event detail, artifact paths, tool logs, and version history in daily notes, leaf summaries, or topic memory.
+- Keep source pointers so the agent can drill down when the detail matters.
+- If `MEMORY.md` exceeds the hot budget, compress long promoted entries into indexes before adding more content.
 
 ### 5. Add topic memory
 
@@ -334,6 +343,10 @@ For significant incidents, recovery should create or verify:
 - pending topic proposal when durable state should be promoted
 - health check result
 - exact resume path
+
+Completion gate:
+
+The agent should not say `recovery complete` until the required outputs have been checked. If something is missing, it should say which item is missing and finish that item before declaring completion. If the health check passes with warnings, the warnings should be named explicitly.
 
 ### Must be verified live
 

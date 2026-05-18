@@ -15,6 +15,12 @@
 - Health check result.
 - Resume path.
 
+## Completion Gate
+
+Do not say recovery is complete until the required outputs have been checked.
+
+If anything is missing, say what is missing and finish it before declaring completion. If health passes with warnings, name the warnings.
+
 ## Approval Boundary
 
 Daily notes, leaf candidates, and pending proposals are allowed automatically.

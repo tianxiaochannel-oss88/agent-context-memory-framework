@@ -757,6 +757,14 @@ visible user status
 
 Daily-only recovery is incomplete when the incident affects durable project state, accepted assets, failure rules, or future resume instructions.
 
+Completion gate:
+
+```text
+Do not say "recovery complete" until the required outputs have been checked.
+If any item is missing, report the missing item and complete it first.
+If the health check passes with warnings, name the warnings explicitly.
+```
+
 Recovery may create daily notes, leaf candidates, and pending proposals automatically. It must still ask before applying L2 changes and require target-specific approval before L3 changes.
 
 ## 16. Anti-Recursion Rule
@@ -1166,6 +1174,14 @@ raw / daily
 -> topic summary proposal
 -> user-approved topic update
 -> optional project/global digest
+```
+
+Hot memory promotion gate:
+
+```text
+Hot MEMORY should contain compact durable preferences, critical rules, and pointers.
+Long event logs, artifact paths, version history, and tool output belong in daily notes, leaf summaries, topic memory, or promoted cold evidence.
+If the hot file exceeds its budget, compress long promoted entries into indexes before adding more content.
 ```
 
 Core persona is not part of automatic Memory Tree Lite promotion. It may be referenced by provenance, but it must not be automatically summarized, rewritten, or superseded.

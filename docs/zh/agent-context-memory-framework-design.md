@@ -757,6 +757,14 @@ tool work failed / aborted / timeout / ambiguous delivery state
 
 如果事件影响项目状态、已接受资产、失败规则或下一轮恢复路径，只写 daily memory 是不完整的。
 
+Completion gate / 完成门槛：
+
+```text
+在检查完必需产物前，不要说“回档完成”。
+如果缺少某一项，先明确说明缺少什么，并补齐后再宣布完成。
+如果 health check 是 PASS with warnings，必须明确说出 warning。
+```
+
 Recovery 可以自动生成 daily note、leaf candidate 和 pending proposal；但真正应用 L2 变更前仍需审批，L3 变更前必须明确点名审批。
 
 ## 16. 防自我递归规则
@@ -1165,6 +1173,14 @@ raw / daily
 -> topic summary proposal
 -> user-approved topic update
 -> optional project/global digest
+```
+
+Hot memory promotion gate / 热层提升门槛：
+
+```text
+hot MEMORY 只放紧凑的长期偏好、关键规则和索引指针。
+长事件、产物路径、版本历史和工具输出应放在 daily、leaf、topic memory 或 cold promoted evidence。
+如果 hot file 超过预算，先把长 promoted entries 压成索引，再继续添加内容。
 ```
 
 Core Persona 不进入自动 Memory Tree Lite promotion。它可以被 provenance 引用，但不能被自动摘要、重写或 supersede。
