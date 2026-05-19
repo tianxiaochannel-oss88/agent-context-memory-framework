@@ -10,6 +10,8 @@ Generated: YYYY-MM-DD
 
 ## Hot File Budget
 
+Suggested thresholds: keep `MEMORY.md` around 8k chars when easy, warn at 10k; keep other hot files short enough to stay index-like.
+
 | File | Size | Status |
 |---|---:|---|
 | `AGENTS.md` | 0 | PASS |

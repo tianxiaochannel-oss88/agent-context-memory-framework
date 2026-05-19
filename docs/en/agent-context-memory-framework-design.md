@@ -883,7 +883,7 @@ Suggested budget:
 AGENTS.md: 1k-3k chars
 BOOTSTRAP_INDEX.md: 1k-3k chars
 TOOLS.md: 1k-3k chars
-MEMORY.md hot summary: 2k-5k chars
+MEMORY.md hot summary: 2k-5k chars target, 10k warning threshold
 Core Persona: 500-1500 chars
 ```
 
@@ -1176,11 +1176,13 @@ raw / daily
 -> optional project/global digest
 ```
 
-Hot memory promotion gate:
+Hot Memory Ingestion Gate:
 
 ```text
 Hot MEMORY should contain compact durable preferences, critical rules, and pointers.
 Long event logs, artifact paths, version history, and tool output belong in daily notes, leaf summaries, topic memory, or promoted cold evidence.
+Treat MEMORY.md as a hot index, not an event log.
+Use roughly 8k chars as a lightweight target and 10k chars as a practical warning threshold.
 If the hot file exceeds its budget, compress long promoted entries into indexes before adding more content.
 ```
 

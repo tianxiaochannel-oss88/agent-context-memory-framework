@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Hot memory index for DemoAgent.
+Hot memory index for DemoAgent. Keep it index-like; 8k chars is a useful target and 10k chars is a practical warning threshold.
 
 ## Persona
 

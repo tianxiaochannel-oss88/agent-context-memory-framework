@@ -883,7 +883,7 @@ Agent Runtime 又 100% ctx 了，先查什么？
 AGENTS.md: 1k-3k chars
 BOOTSTRAP_INDEX.md: 1k-3k chars
 TOOLS.md: 1k-3k chars
-MEMORY.md hot summary: 2k-5k chars
+MEMORY.md hot summary: 2k-5k chars 目标，10k warning threshold
 Core Persona: 500-1500 chars
 ```
 
@@ -1175,11 +1175,13 @@ raw / daily
 -> optional project/global digest
 ```
 
-Hot memory promotion gate / 热层提升门槛：
+Hot Memory Ingestion Gate / 热记忆写入门槛：
 
 ```text
 hot MEMORY 只放紧凑的长期偏好、关键规则和索引指针。
 长事件、产物路径、版本历史和工具输出应放在 daily、leaf、topic memory 或 cold promoted evidence。
+MEMORY.md 是 hot index，不是 event log。
+8k 左右是轻量目标，10k 是实际 warning threshold。
 如果 hot file 超过预算，先把长 promoted entries 压成索引，再继续添加内容。
 ```
 

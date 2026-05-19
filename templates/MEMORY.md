@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Hot memory index. Keep this file compact.
+Hot memory index. Keep this file compact; use roughly 8k chars as a lightweight target and 10k chars as a practical warning threshold.
 
 ## Core Persona
 
@@ -25,6 +25,7 @@ Hot memory index. Keep this file compact.
 - Raw daily logs: `memory/daily/`
 - Project/global digests: `memory/digests/`
 - Hot promotion rule: daily logs and long event records become leaf/topic/digest entries first; hot memory gets only short indexes and source pointers.
+- Hot ingestion gate: `MEMORY.md` is an index, not an event log.
 
 ## Read Rule
 

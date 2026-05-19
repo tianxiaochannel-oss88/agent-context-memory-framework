@@ -187,11 +187,13 @@ Keep hot files short and index-like.
 
 Move long details into topic files and tool docs. Do not delete source memory during the first pass.
 
-Hot memory promotion gate:
+Hot Memory Ingestion Gate:
 
 - Keep promoted hot entries short, preferably one or two lines.
 - Store event detail, artifact paths, tool logs, and version history in daily notes, leaf summaries, or topic memory.
 - Keep source pointers so the agent can drill down when the detail matters.
+- Treat `MEMORY.md` as a hot index, not an event log.
+- Use roughly 8k chars as a lightweight target and 10k chars as a practical warning threshold.
 - If `MEMORY.md` exceeds the hot budget, compress long promoted entries into indexes before adding more content.
 
 ### 5. Add topic memory

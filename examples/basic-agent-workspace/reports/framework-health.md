@@ -15,6 +15,7 @@ Generated: 2026-01-01
 - Runtime topic has source refs: PASS
 - Leaf summary has raw source ref: PASS
 - Volatile facts require verification: PASS
+- Hot memory stays index-like and below the practical 10k warning threshold: PASS
 
 ## Notes
 
