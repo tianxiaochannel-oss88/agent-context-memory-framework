@@ -145,6 +145,15 @@ memory/daily/*.md
 
 Do not delete moved content in the first pass. Keep a backup and leave pointers.
 
+If OpenClaw or a similar runtime injects a long `Promoted From Short-Term Memory` block into `MEMORY.md`, treat it as warm evidence rather than hot memory:
+
+```text
+backup MEMORY.md
+move the promoted block unchanged to memory/promoted/YYYY-MM-DD-short-term-promotions.md
+replace it with a short source-linked index
+rerun framework health
+```
+
 ## Step 4: Add OpenClaw Topic Memory
 
 Create `memory/topics/openclaw.md`:

@@ -26,6 +26,7 @@ Hot memory index. Keep this file compact; use roughly 8k chars as a lightweight 
 - Project/global digests: `memory/digests/`
 - Hot promotion rule: daily logs and long event records become leaf/topic/digest entries first; hot memory gets only short indexes and source pointers.
 - Hot ingestion gate: `MEMORY.md` is an index, not an event log.
+- Promoted hot-layer guard: long automatic promoted sections should move unchanged to `memory/promoted/` and leave only a short source-linked index here.
 
 ## Read Rule
 

@@ -196,6 +196,14 @@ Hot Memory Ingestion Gate:
 - Use roughly 8k chars as a lightweight target and 10k chars as a practical warning threshold.
 - If `MEMORY.md` exceeds the hot budget, compress long promoted entries into indexes before adding more content.
 
+Promoted Hot-Layer Guard:
+
+- Detect sections such as `Promoted From Short-Term Memory` inside `MEMORY.md`.
+- Warn when promoted content is long, for example above roughly 3k chars.
+- Move the promoted block unchanged into warm storage such as `memory/promoted/YYYY-MM-DD-short-term-promotions.md`.
+- Replace the hot block with a 3-5 line source-linked index.
+- Keep this semi-automatic: changing hot memory should be visible and reviewable unless the ingestion gate exception clearly applies.
+
 ### 5. Add topic memory
 
 Create focused files for recurring work domains:
@@ -233,6 +241,7 @@ The goal is not bureaucracy. The goal is to avoid unverifiable memory claims.
 At minimum, periodically check:
 
 - Hot file sizes.
+- Whether `MEMORY.md` contains long promoted short-term sections.
 - Whether topic routing still matches real work.
 - Whether daily notes should be promoted into topic memory.
 - Whether any volatile fact is being treated as permanent memory.
@@ -261,6 +270,7 @@ memory/
     creative-workflows.md
   daily/
   leaves/
+  promoted/
   digests/
 
 docs/
@@ -479,7 +489,8 @@ Start small:
 5. Add smoke tests for persona stability, tool routing, lazy loading, and volatile-fact verification.
 6. Add provenance fields such as `source_refs`, `derived_from`, `confidence`, and `last_verified`.
 7. Add a maintenance loop that creates pending proposals, never silent core changes.
-8. Evaluate vector search and reranking later, only when the Markdown corpus becomes large enough to need retrieval acceleration.
+8. Add a promoted hot-layer guard so automatic promotions cannot turn `MEMORY.md` back into an event log.
+9. Evaluate vector search and reranking later, only when the Markdown corpus becomes large enough to need retrieval acceleration.
 
 The [basic example workspace](examples/basic-agent-workspace/) is a safe reference shape. Do not copy it over an existing workspace without first backing up and adapting the placeholders.
 

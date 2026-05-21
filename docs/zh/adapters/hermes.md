@@ -184,6 +184,8 @@ TOOLS.md:
 
 完整细节放进 topic 文件和 docs。
 
+如果自动 promotion 在 `MEMORY.md` 里生成很长的 promoted-memory section，仍要保持 hot file 是索引：把该 section 原样移动到 `memory/promoted/`，在 hot memory 里只留短 source-linked pointer，然后运行 health check。
+
 ## Step 5：Smoke Tests
 
 建议测试：

@@ -186,6 +186,8 @@ TOOLS.md:
 
 Move full details into topic files and docs.
 
+If an automatic promotion creates a long promoted-memory section in `MEMORY.md`, keep the hot file as an index: move the section unchanged into `memory/promoted/`, leave a short source-linked pointer, and run the health check.
+
 ## Step 5: Smoke Tests
 
 Suggested tests:

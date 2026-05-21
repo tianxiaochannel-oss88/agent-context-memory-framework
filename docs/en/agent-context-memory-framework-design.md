@@ -303,6 +303,22 @@ Limits:
 - Do not promote directly into long-term memory.
 - Promote into topic memory only through promotion rules.
 
+### memory/promoted/*.md
+
+Purpose: warm evidence for promoted content that is too large for the hot layer.
+
+Use for:
+
+- Preserving automatic promoted-memory blocks unchanged.
+- Keeping source comments and provenance hints intact.
+- Giving `MEMORY.md` a short pointer instead of a long event log.
+
+Limits:
+
+- Do not hot-load by default.
+- Do not treat as approved topic memory until reviewed.
+- Distill durable items into leaves, topics, or digests with source references.
+
 ## 4. Loading Layers
 
 ### Hot Layer
@@ -1184,6 +1200,19 @@ Long event logs, artifact paths, version history, and tool output belong in dail
 Treat MEMORY.md as a hot index, not an event log.
 Use roughly 8k chars as a lightweight target and 10k chars as a practical warning threshold.
 If the hot file exceeds its budget, compress long promoted entries into indexes before adding more content.
+```
+
+Promoted Hot-Layer Guard:
+
+```text
+Detect `Promoted From Short-Term Memory` or similar promoted sections in MEMORY.md.
+Warn if MEMORY.md exceeds the hot budget or if the promoted section is long, for example above roughly 3k chars.
+Suggested remediation:
+  backup MEMORY.md
+  move the promoted section unchanged into memory/promoted/YYYY-MM-DD-short-term-promotions.md
+  replace the hot section with a 3-5 line source-linked index
+  rerun framework health
+Do not silently rewrite core persona, tool routing, safety rules, or framework policy.
 ```
 
 Core persona is not part of automatic Memory Tree Lite promotion. It may be referenced by provenance, but it must not be automatically summarized, rewritten, or superseded.

@@ -145,6 +145,15 @@ memory/daily/*.md
 
 第一轮不要删除原内容，先保留备份和指针。
 
+如果 OpenClaw 或类似 runtime 把很长的 `Promoted From Short-Term Memory` block 注入 `MEMORY.md`，不要把它当作 hot memory 长期保留，而是作为 warm evidence 处理：
+
+```text
+备份 MEMORY.md
+把 promoted block 原样移动到 memory/promoted/YYYY-MM-DD-short-term-promotions.md
+替换为短 source-linked index
+重新运行 framework health
+```
+
 ## Step 4：建立 OpenClaw 专题记忆
 
 创建 `memory/topics/openclaw.md`：

@@ -303,6 +303,22 @@ last_reviewed: 2026-05-16
 - 不直接提升为长期记忆。
 - 提升到 topic 需要满足 promotion rule。
 
+### memory/promoted/*.md
+
+定位：温层证据区，用来保存不适合放入 hot layer 的 promoted 内容。
+
+用途：
+
+- 原样保留自动 promoted-memory block。
+- 保留 source comments 和 provenance 线索。
+- 让 `MEMORY.md` 只保留短指针，而不是长事件日志。
+
+限制：
+
+- 默认不 hot-load。
+- 未审查前不视为已批准 topic memory。
+- 真正长期有效的内容应再沉淀为带 source refs 的 leaf、topic 或 digest。
+
 ## 4. 加载分层
 
 ### 热层
@@ -1183,6 +1199,19 @@ hot MEMORY 只放紧凑的长期偏好、关键规则和索引指针。
 MEMORY.md 是 hot index，不是 event log。
 8k 左右是轻量目标，10k 是实际 warning threshold。
 如果 hot file 超过预算，先把长 promoted entries 压成索引，再继续添加内容。
+```
+
+Promoted Hot-Layer Guard / promoted 热层守门：
+
+```text
+检测 MEMORY.md 里的 `Promoted From Short-Term Memory` 或类似 promoted section。
+如果 MEMORY.md 超过热层预算，或 promoted section 过长，例如超过约 3k chars，则 health check 应提示 WARN。
+建议修复流程：
+  备份 MEMORY.md
+  把 promoted section 原样移动到 memory/promoted/YYYY-MM-DD-short-term-promotions.md
+  在 hot section 位置替换成 3-5 行带来源指针的短索引
+  重新运行 framework health
+不要静默重写 core persona、tool routing、安全规则或 framework policy。
 ```
 
 Core Persona 不进入自动 Memory Tree Lite promotion。它可以被 provenance 引用，但不能被自动摘要、重写或 supersede。
