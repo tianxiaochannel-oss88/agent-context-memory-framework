@@ -1214,6 +1214,21 @@ Promoted Hot-Layer Guard / promoted 热层守门：
 不要静默重写 core persona、tool routing、安全规则或 framework policy。
 ```
 
+Standing Promoted Cleanup Exception / 有边界的 promoted 机械清理例外：
+
+```text
+只有同时满足这些条件时，agent 才可以不逐次询问，直接机械清理：
+  section 带有 openclaw-memory-promotion 等 promotion 来源标记
+  每个引用的 memory/YYYY-MM-DD.md 源文件仍然存在
+  目标 memory/promoted 文件不会覆盖已有内容
+  promoted section 必须原样移动
+  MEMORY.md 里只能留下 3-5 行带来源指针的短索引
+  不涉及 persona、AGENTS、TOOLS、topic memory、framework policy、安全规则、权限边界、删除、脱敏或语义改写
+
+如果缺少来源标记、源文件不存在、混入受保护内容、目标文件冲突，
+或者需要摘要、合并、脱敏、解释内容，就必须停止并请求明确审批。
+```
+
 Core Persona 不进入自动 Memory Tree Lite promotion。它可以被 provenance 引用，但不能被自动摘要、重写或 supersede。
 
 ### 未来可选 Retrieval Layer

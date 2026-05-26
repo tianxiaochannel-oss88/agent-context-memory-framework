@@ -186,6 +186,8 @@ TOOLS.md:
 
 如果自动 promotion 在 `MEMORY.md` 里生成很长的 promoted-memory section，仍要保持 hot file 是索引：把该 section 原样移动到 `memory/promoted/`，在 hot memory 里只留短 source-linked pointer，然后运行 health check。
 
+只有来源标记和引用源文件都存在，且不触碰 persona、tool routing、topic memory、framework policy、权限、删除/脱敏或语义解释时，才把它视为预批准的机械清理。
+
 ## Step 5：Smoke Tests
 
 建议测试：

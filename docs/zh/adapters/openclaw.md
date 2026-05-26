@@ -154,6 +154,8 @@ memory/daily/*.md
 重新运行 framework health
 ```
 
+只有 promoted block 带有 promotion 来源标记、引用的 `memory/YYYY-MM-DD.md` 源文件仍存在、目标文件不会覆盖已有内容，且不涉及 persona、tool routing、topic memory、framework policy、安全规则、权限边界、删除、脱敏或语义改写时，才可以把它当成预批准的机械清理。
+
 ## Step 4：建立 OpenClaw 专题记忆
 
 创建 `memory/topics/openclaw.md`：

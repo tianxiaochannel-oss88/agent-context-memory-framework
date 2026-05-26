@@ -1215,6 +1215,22 @@ Suggested remediation:
 Do not silently rewrite core persona, tool routing, safety rules, or framework policy.
 ```
 
+Standing Promoted Cleanup Exception:
+
+```text
+The agent may perform this cleanup without case-by-case approval only when:
+  the section contains promotion source markers such as openclaw-memory-promotion
+  every referenced memory/YYYY-MM-DD.md source still exists
+  the target memory/promoted file will not overwrite existing content
+  the promoted section is moved unchanged
+  MEMORY.md receives only a 3-5 line source-linked index
+  no persona, AGENTS, TOOLS, topic memory, framework policy, safety rule, permission boundary, deletion, redaction, or semantic rewrite is involved
+
+Stop and ask for explicit approval if source markers are missing, source files are missing,
+protected content is mixed in, destination conflicts exist, or cleanup requires summarizing,
+merging, redacting, or interpreting the content.
+```
+
 Core persona is not part of automatic Memory Tree Lite promotion. It may be referenced by provenance, but it must not be automatically summarized, rewritten, or superseded.
 
 ### Future Optional Retrieval Layer

@@ -46,6 +46,19 @@ Require explicit, target-specific approval:
 - credential changes
 - production or destructive operations
 
+## Standing Promoted Cleanup Exception
+
+Long automatic promoted-memory sections may be cleaned mechanically without case-by-case approval only when all conditions hold:
+
+- the section has promotion source markers
+- referenced source files still exist
+- the target `memory/promoted/` file will not overwrite existing content
+- the promoted section is moved unchanged
+- hot memory receives only a short source-linked index
+- no persona, tools, topic memory, framework policy, permissions, deletion/redaction, or semantic rewrite is involved
+
+Stop and ask for explicit approval if any condition is uncertain.
+
 Generic "continue" or "do it" does not count as L3 approval unless the protected target is named.
 
 ## Prompt Shape

@@ -154,6 +154,8 @@ replace it with a short source-linked index
 rerun framework health
 ```
 
+This may be treated as a standing mechanical cleanup only when the promoted block has promotion source markers, referenced `memory/YYYY-MM-DD.md` sources still exist, the destination does not overwrite existing content, and no persona, tool routing, topic memory, framework policy, safety rule, permission boundary, deletion, redaction, or semantic rewrite is involved.
+
 ## Step 4: Add OpenClaw Topic Memory
 
 Create `memory/topics/openclaw.md`:

@@ -188,6 +188,8 @@ Move full details into topic files and docs.
 
 If an automatic promotion creates a long promoted-memory section in `MEMORY.md`, keep the hot file as an index: move the section unchanged into `memory/promoted/`, leave a short source-linked pointer, and run the health check.
 
+Treat this as pre-approved mechanical cleanup only when source markers and referenced source files are present and the change does not touch persona, tool routing, topic memory, framework policy, permissions, deletion/redaction, or semantic interpretation.
+
 ## Step 5: Smoke Tests
 
 Suggested tests:

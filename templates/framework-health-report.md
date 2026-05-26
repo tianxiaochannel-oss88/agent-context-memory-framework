@@ -25,7 +25,7 @@ Suggested thresholds: keep `MEMORY.md` around 8k chars when easy, warn at 10k; k
 - `MEMORY.md` contains no long `Promoted From Short-Term Memory` section: PASS / WARN / FAIL
 - Promoted section size is below the local warning threshold, for example 3k chars: PASS / WARN / FAIL
 - Long promoted content has a suggested warm-storage path such as `memory/promoted/YYYY-MM-DD-short-term-promotions.md`: PASS / WARN / FAIL
-- Hot memory remediation requires review unless the Hot Memory Ingestion Gate exception clearly applies: PASS / WARN / FAIL
+- Standing cleanup eligibility is validated: source markers present, source files exist, no destination conflict, no protected content mixed in: PASS / WARN / FAIL
 
 ## Provenance Checks
 

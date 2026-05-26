@@ -202,7 +202,8 @@ Promoted Hot-Layer Guard:
 - Warn when promoted content is long, for example above roughly 3k chars.
 - Move the promoted block unchanged into warm storage such as `memory/promoted/YYYY-MM-DD-short-term-promotions.md`.
 - Replace the hot block with a 3-5 line source-linked index.
-- Keep this semi-automatic: changing hot memory should be visible and reviewable unless the ingestion gate exception clearly applies.
+- Allow this as a bounded standing cleanup only when promotion source markers exist, referenced sources still exist, and no protected content is mixed in.
+- Stop for explicit approval if cleanup would require rewriting, summarizing, merging, redacting, overwriting evidence, or touching persona/tool/framework policy.
 
 ### 5. Add topic memory
 
@@ -334,6 +335,8 @@ Use approval levels so the agent asks at the right time instead of relying on th
 | L3 Strong Approval | Require explicit target-specific approval | Modify core persona, hot memory, framework policy, permission boundaries, delete/redact evidence, external/public sends |
 
 Generic phrases like "continue" or "do it" should not count as L3 approval unless the protected target is named.
+
+Narrow exception: long automatic promoted-memory sections may be cleaned mechanically when they have promotion source markers, the referenced sources still exist, the block is moved unchanged to `memory/promoted/`, and `MEMORY.md` receives only a short source-linked index. This does not authorize rewriting hot memory or changing persona, tools, framework policy, permissions, or evidence.
 
 ### Recovery triggers
 

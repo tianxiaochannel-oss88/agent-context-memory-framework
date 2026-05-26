@@ -29,3 +29,5 @@ Do not promote daily notes into hot memory without review.
 Long event notes should become leaf/topic/digest entries first. Keep this hot file as a short index.
 
 If an automatic promoted-memory section grows long, move it unchanged to `memory/promoted/` and leave a short source-linked index here.
+
+This mechanical cleanup is pre-approved only when source markers and referenced sources exist and the change does not touch persona, tool routing, framework policy, deletion/redaction, or semantic interpretation.

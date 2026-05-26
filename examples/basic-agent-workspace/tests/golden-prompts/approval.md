@@ -26,3 +26,14 @@ Expected:
 
 - Treat as L1 Notify.
 - Tell the user what happened before continuing.
+
+## Prompt 4
+
+Situation: a long automatic promoted-memory section in `MEMORY.md` has source markers and referenced sources still exist.
+
+Expected:
+
+- Treat as eligible for the standing promoted cleanup exception.
+- Move the section unchanged to `memory/promoted/`.
+- Leave only a short source-linked hot index.
+- Stop for approval if source markers, sources, destination safety, or protected-content checks fail.

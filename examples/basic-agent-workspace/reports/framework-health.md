@@ -17,6 +17,7 @@ Generated: 2026-01-01
 - Volatile facts require verification: PASS
 - Hot memory stays index-like and below the practical 10k warning threshold: PASS
 - Promoted hot-layer guard found no long promoted section in `MEMORY.md`: PASS
+- Standing promoted cleanup exception has no eligible work in this example workspace: PASS
 
 ## Notes
 
