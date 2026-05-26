@@ -14,6 +14,7 @@ It is safe to read and copy from, but do not copy it over a real workspace witho
 - Approval gates under `docs/framework/policy.md`
 - Recovery trigger workflow under `docs/framework/recovery.md`
 - Smoke-test prompts under `tests/golden-prompts/`
+- Vector-friendly memory shape without requiring a vector database
 
 ## Fake Scenario
 

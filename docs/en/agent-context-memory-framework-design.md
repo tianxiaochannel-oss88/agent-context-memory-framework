@@ -1237,6 +1237,8 @@ Core persona is not part of automatic Memory Tree Lite promotion. It may be refe
 
 Vector search and reranking are useful only when the Markdown corpus becomes large enough that keyword search and topic indexes are no longer enough.
 
+See also: [Optional retrieval layer](retrieval-layer.md).
+
 Future path:
 
 ```text
@@ -1257,6 +1259,7 @@ Do not use vector search as the only path to Core Persona.
 Do not use rerank results as proof.
 Always preserve source_refs and allow drill-down to raw evidence.
 Use embedding/rerank as retrieval acceleration, not memory authority.
+Keep public examples platform-neutral; do not commit local model cache paths or private recall stores.
 ```
 
 ## 22. Implementation Phases

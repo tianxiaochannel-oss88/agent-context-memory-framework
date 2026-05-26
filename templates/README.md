@@ -17,3 +17,5 @@ They are intentionally generic. They should not be used to overwrite existing pe
 - `framework-policy.md` - approval gates and protected-change policy.
 - `recovery-workflow.md` - recovery trigger checklist for long context, failures, and handoffs.
 - `framework-health-report.md` - framework health report template.
+
+Optional retrieval guidance is documented in `docs/en/retrieval-layer.md` and `docs/zh/retrieval-layer.md`. It is not a template file because model IDs, cache paths, and acceleration backends are runtime- and OS-specific.

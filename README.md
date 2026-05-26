@@ -10,6 +10,7 @@ It helps durable assistants stay fast, stable, traceable, and safe as their pers
 
 - [English design document](docs/en/agent-context-memory-framework-design.md)
 - [中文设计文档](docs/zh/agent-context-memory-framework-design.md)
+- [Optional retrieval layer](docs/en/retrieval-layer.md) / [中文](docs/zh/retrieval-layer.md)
 - [OpenClaw adapter guide](docs/en/adapters/openclaw.md) / [中文](docs/zh/adapters/openclaw.md)
 - [Hermes adapter guide](docs/en/adapters/hermes.md) / [中文](docs/zh/adapters/hermes.md)
 - [Templates](templates/)
@@ -59,6 +60,24 @@ thin startup
 
 The hot layer should tell the agent where to look. It should not contain every historical detail.
 
+### Optional Retrieval Layer
+
+The framework can work with vector search, local embedding models, or rerankers, but it does not require them.
+
+```text
+hot index -> topic/leaf/digest/promoted corpus -> optional embedding retrieval -> source_refs/provenance check -> live verification when needed
+```
+
+Rules:
+
+- Markdown memory files remain the source of truth.
+- Embeddings help find relevant memory; they do not prove that memory is correct.
+- Rerankers improve ordering; they do not replace review state, provenance, or live verification.
+- Core persona must remain reachable through the hot index, not only through vector search.
+- Public configs should use placeholders instead of machine-specific model paths.
+
+See [Optional retrieval layer](docs/en/retrieval-layer.md) / [中文](docs/zh/retrieval-layer.md).
+
 ## Benefits
 
 - **Lower token cost:** repeated bootstrap content is reduced, and detailed files are loaded only when relevant.
@@ -81,6 +100,7 @@ The hot layer should tell the agent where to look. It should not contain every h
 - Treat memory as hints for volatile facts; verify current state before acting.
 - Treat recovery as a workflow, not a note: daily log, leaf candidate, topic proposal, health check, and resume path.
 - Do not say recovery is complete until the recovery completion gate has been checked.
+- Keep the memory corpus vector-friendly, but treat embeddings and rerankers as optional retrieval accelerators, not memory authority.
 - Let the framework observe usage and generate candidate updates.
 - Use approval gates before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
 - Keep major framework changes backed up, tested, and reversible.
@@ -113,6 +133,7 @@ This project is not:
 
 - A mandatory runtime.
 - A vector database.
+- A requirement to install an embedding model.
 - A one-click installer.
 - A secret manager.
 - A replacement for your existing agent framework.
@@ -493,7 +514,7 @@ Start small:
 6. Add provenance fields such as `source_refs`, `derived_from`, `confidence`, and `last_verified`.
 7. Add a maintenance loop that creates pending proposals, never silent core changes.
 8. Add a promoted hot-layer guard so automatic promotions cannot turn `MEMORY.md` back into an event log.
-9. Evaluate vector search and reranking later, only when the Markdown corpus becomes large enough to need retrieval acceleration.
+9. Keep the corpus vector-friendly and evaluate vector search or reranking only when the Markdown corpus becomes large enough to need retrieval acceleration.
 
 The [basic example workspace](examples/basic-agent-workspace/) is a safe reference shape. Do not copy it over an existing workspace without first backing up and adapting the placeholders.
 

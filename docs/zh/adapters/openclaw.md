@@ -202,7 +202,38 @@ smaller bootstrapMaxChars / bootstrapTotalMaxChars
 shorter contextPruning TTL
 ```
 
+如果你的 OpenClaw 版本支持 memory search，这套框架是向量友好的，但不强制依赖向量。公开示例保持通用：
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "memorySearch": {
+        "provider": "local",
+        "model": "hf:your-org/your-embedding-model.gguf"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+embedding 用来召回 topic、leaf、digest、promoted memory。不要把 vector hit 当成证据，也不要把 vector search 当成读取 core persona 的唯一路径。详见：[可选检索层](../retrieval-layer.md)。
+
 不要盲目照抄。先确认当前 runtime 版本和配置。
+
+跨平台注意：macOS、Linux、Windows 的模型缓存路径、shell 和加速后端可能不同。不要公开本机路径、`.dreams`、session corpus、API key 或私有 workspace memory。
 
 ## Step 6：Smoke Tests
 

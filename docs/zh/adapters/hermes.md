@@ -188,6 +188,8 @@ TOOLS.md:
 
 只有来源标记和引用源文件都存在，且不触碰 persona、tool routing、topic memory、framework policy、权限、删除/脱敏或语义解释时，才把它视为预批准的机械清理。
 
+如果 runtime 支持 memory search，也保持可选。embedding 可以召回 `memory/topics/`、`memory/leaves/`、`memory/digests/` 和 `memory/promoted/`，但 Markdown 文件和 provenance 仍然是事实来源。详见：[可选检索层](../retrieval-layer.md)。
+
 ## Step 5：Smoke Tests
 
 建议测试：

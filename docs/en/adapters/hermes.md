@@ -190,6 +190,8 @@ If an automatic promotion creates a long promoted-memory section in `MEMORY.md`,
 
 Treat this as pre-approved mechanical cleanup only when source markers and referenced source files are present and the change does not touch persona, tool routing, topic memory, framework policy, permissions, deletion/redaction, or semantic interpretation.
 
+If the runtime supports memory search, keep it optional. Embeddings may retrieve `memory/topics/`, `memory/leaves/`, `memory/digests/`, and `memory/promoted/`, but Markdown files and provenance remain the source of truth. See [Optional retrieval layer](../retrieval-layer.md).
+
 ## Step 5: Smoke Tests
 
 Suggested tests:

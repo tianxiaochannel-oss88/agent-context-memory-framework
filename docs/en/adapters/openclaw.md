@@ -202,7 +202,38 @@ smaller bootstrapMaxChars / bootstrapTotalMaxChars
 shorter contextPruning TTL
 ```
 
+If your OpenClaw version supports memory search, the framework is vector-friendly but does not require it. Keep public examples generic:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "memorySearch": {
+        "provider": "local",
+        "model": "hf:your-org/your-embedding-model.gguf"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Use embeddings to retrieve topic, leaf, digest, and promoted memory. Do not use vector hits as proof, and do not rely on vector search as the only path to core persona. See [Optional retrieval layer](../retrieval-layer.md).
+
 Do not copy these blindly. Verify your runtime version and current configuration first.
+
+Cross-platform notes: macOS, Linux, and Windows may use different model cache paths, shells, and acceleration backends. Do not publish machine-specific paths, `.dreams`, session corpora, API keys, or private workspace memory.
 
 ## Step 6: Smoke Tests
 

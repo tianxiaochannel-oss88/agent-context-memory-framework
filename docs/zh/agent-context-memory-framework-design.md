@@ -1235,6 +1235,8 @@ Core Persona 不进入自动 Memory Tree Lite promotion。它可以被 provenanc
 
 向量搜索和 rerank 只有在 Markdown corpus 变大、关键词搜索和 topic index 不够用时才需要。
 
+详见：[可选检索层](retrieval-layer.md)。
+
 未来路径：
 
 ```text
@@ -1255,6 +1257,7 @@ Phase 3:
 不要把 rerank 结果当成证据。
 始终保留 source_refs，并允许 drill down 到 raw evidence。
 embedding/rerank 是检索加速器，不是记忆权威。
+公开示例保持跨平台，不提交本机模型缓存路径或私有 recall store。
 ```
 
 ## 22. 落地阶段

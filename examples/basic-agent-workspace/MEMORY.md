@@ -31,3 +31,5 @@ Long event notes should become leaf/topic/digest entries first. Keep this hot fi
 If an automatic promoted-memory section grows long, move it unchanged to `memory/promoted/` and leave a short source-linked index here.
 
 This mechanical cleanup is pre-approved only when source markers and referenced sources exist and the change does not touch persona, tool routing, framework policy, deletion/redaction, or semantic interpretation.
+
+Vector search is optional. If enabled, use it to retrieve topic/leaf/digest/promoted memory; do not treat embedding hits as proof.
