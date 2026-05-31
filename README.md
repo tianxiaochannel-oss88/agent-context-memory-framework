@@ -483,7 +483,7 @@ Chinese version: [OpenClaw 适配指南](docs/zh/adapters/openclaw.md)
 
 ### Hermes Adapter
 
-The [Hermes adapter guide](docs/en/adapters/hermes.md) provides the same conservative migration pattern for Hermes-style agent workspaces.
+The [Hermes adapter guide](docs/en/adapters/hermes.md) maps the framework onto Hermes-native active overlays such as `SOUL.md`, `USER.md`, compact hot memory, and workspace routing. It does not require copying the OpenClaw file layout, and it calls out Hermes-specific prompt-cache and deferred-invalidation constraints.
 
 Chinese version: [Hermes 适配指南](docs/zh/adapters/hermes.md)
 
