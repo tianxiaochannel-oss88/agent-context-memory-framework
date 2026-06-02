@@ -543,6 +543,10 @@ When proposing changes, prefer:
 - Backward-compatible patterns.
 - Examples that can be understood without private context.
 
+## License
+
+MIT. See [LICENSE](LICENSE).
+
 ## Status
 
 This is a design-first public draft. It is intentionally implementation-agnostic and can be adapted to different agent runtimes, coding assistants, chat agents, and local automation systems.
