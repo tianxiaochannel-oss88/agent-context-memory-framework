@@ -36,3 +36,5 @@ This mechanical cleanup is pre-approved only when source markers and referenced 
 Vector search is optional. If enabled, use it to retrieve topic/leaf/digest/promoted memory; do not treat embedding hits as proof.
 
 Corrections and post-task reflections stay in `memory/self-improving/` as candidates until they become reviewed `pending/memory-updates/` proposals.
+
+Repeated self-improving lessons may update `source_refs`, `last_seen_at`, and `evidence_count`; semantic merge, deletion, or promotion still needs review.

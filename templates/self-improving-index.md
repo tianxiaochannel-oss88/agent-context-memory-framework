@@ -37,12 +37,23 @@ confidence: low | medium | high
 review_state: candidate | active | stale | archived | superseded
 verify_before_use: true | false
 valid_until:
+last_seen_at:
+evidence_count: 1
+superseded_by:
 created_at: YYYY-MM-DD
 last_used_at:
 use_count: 0
 ```
 
 Required sections: `Trigger`, `Lesson`, `Use When`, and `Do Not Use When`.
+
+## Minimal Duplicate Update Rule
+
+Keep duplicate handling mechanical:
+
+- Same lesson appears again: append the new `source_refs`, update `last_seen_at`, and increment `evidence_count`.
+- A newer lesson replaces an older lesson: set the older record to `review_state: superseded` and fill `superseded_by`.
+- Semantic merge, deletion, or promotion still requires a `pending/memory-updates/` proposal and user approval.
 
 ## Promotion Boundary
 

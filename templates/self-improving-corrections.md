@@ -20,6 +20,9 @@ confidence: medium
 review_state: candidate
 verify_before_use: true
 valid_until:
+last_seen_at:
+evidence_count: 1
+superseded_by:
 created_at: YYYY-MM-DD
 last_used_at:
 use_count: 0

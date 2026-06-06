@@ -16,3 +16,9 @@ Purpose: keep DemoAgent corrections and post-task reflections searchable without
 ## Boundary
 
 Records here are candidates. They do not change `MEMORY.md`, persona, tool routing, or framework policy unless promoted through `pending/memory-updates/` and approved.
+
+## Minimal Duplicate Update Rule
+
+- Same lesson appears again: append `source_refs`, update `last_seen_at`, and increment `evidence_count`.
+- A newer lesson replaces an older lesson: mark the older record `review_state: superseded` and fill `superseded_by`.
+- Semantic merge, deletion, or promotion requires a reviewed `pending/memory-updates/` proposal.

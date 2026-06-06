@@ -426,7 +426,13 @@ memory/self-improving/corrections.md
 memory/self-improving/reflections.md
 ```
 
-Use it for explicit user corrections, repeated mistakes, repeated tool-routing failures, and post-task lessons. Each record should be short, vector-friendly, and include `source_refs`, `confidence`, `review_state`, `verify_before_use`, `valid_until`, and clear `Use When` / `Do Not Use When` boundaries.
+Use it for explicit user corrections, repeated mistakes, repeated tool-routing failures, and post-task lessons. Each record should be short, vector-friendly, and include `source_refs`, `confidence`, `review_state`, `verify_before_use`, `valid_until`, `last_seen_at`, `evidence_count`, `superseded_by`, and clear `Use When` / `Do Not Use When` boundaries.
+
+Minimal duplicate handling is intentionally narrow:
+
+- If the same lesson appears again, append the new `source_refs`, update `last_seen_at`, and increment `evidence_count`.
+- If a newer lesson replaces an older lesson, mark the older record `review_state: superseded` and fill `superseded_by`.
+- Semantic merge, deletion, or promotion still requires a reviewed pending proposal.
 
 This lane is a warm candidate buffer. It does not directly change `MEMORY.md`, topic memory, persona, tool routing, permissions, or framework policy.
 

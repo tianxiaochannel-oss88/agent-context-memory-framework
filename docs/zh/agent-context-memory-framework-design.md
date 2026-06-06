@@ -364,6 +364,9 @@ confidence: low | medium | high
 review_state: candidate | active | stale | archived | superseded
 verify_before_use: true | false
 valid_until:
+last_seen_at:
+evidence_count: 1
+superseded_by:
 created_at: YYYY-MM-DD
 last_used_at:
 use_count: 0
@@ -377,6 +380,12 @@ Lesson
 Use When
 Do Not Use When
 ```
+
+重复处理应保持最小：
+
+- 同一个 lesson 再次出现：追加新的 `source_refs`，更新 `last_seen_at`，递增 `evidence_count`。
+- 新 lesson 替代旧 lesson：把旧记录设为 `review_state: superseded`，并填写 `superseded_by`。
+- 语义合并、删除或提升必须进入 `pending/memory-updates/` proposal，并由用户确认。
 
 ## 4. 加载分层
 
@@ -1235,6 +1244,9 @@ confidence
 review_state
 verify_before_use
 valid_until
+last_seen_at
+evidence_count
+superseded_by
 ```
 
 提升路径：

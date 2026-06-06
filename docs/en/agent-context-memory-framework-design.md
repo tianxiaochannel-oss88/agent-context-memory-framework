@@ -364,6 +364,9 @@ confidence: low | medium | high
 review_state: candidate | active | stale | archived | superseded
 verify_before_use: true | false
 valid_until:
+last_seen_at:
+evidence_count: 1
+superseded_by:
 created_at: YYYY-MM-DD
 last_used_at:
 use_count: 0
@@ -377,6 +380,12 @@ Lesson
 Use When
 Do Not Use When
 ```
+
+Duplicate handling should stay deliberately small:
+
+- Same lesson appears again: append the new `source_refs`, update `last_seen_at`, and increment `evidence_count`.
+- A newer lesson replaces an older lesson: set the older record to `review_state: superseded` and fill `superseded_by`.
+- Semantic merge, deletion, or promotion requires a `pending/memory-updates/` proposal and user approval.
 
 ## 4. Loading Layers
 
@@ -1236,6 +1245,9 @@ confidence
 review_state
 verify_before_use
 valid_until
+last_seen_at
+evidence_count
+superseded_by
 ```
 
 Promotion path:
