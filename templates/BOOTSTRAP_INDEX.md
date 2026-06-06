@@ -17,6 +17,7 @@
 - `memory/leaves/*.md` - leaf summaries for drill-down.
 - `memory/daily/*.md` - raw daily logs or evidence, searched only when needed.
 - `memory/digests/*.md` - project/global summaries.
+- `memory/self-improving/index.md` - correction/reflection lane; read for repeated mistakes, user corrections, or post-task behavior drift.
 
 ## Volatile Facts
 
@@ -43,6 +44,8 @@ raw / daily
 ```
 
 Core persona is not part of automatic promotion.
+
+Self-improving records are candidates only. Repeated mistakes, explicit user corrections, and reusable post-task lessons should first go to `memory/self-improving/`, then become `pending/memory-updates/` proposals before any hot memory, topic memory, persona, or policy change.
 
 ## Recovery Trigger Rule
 

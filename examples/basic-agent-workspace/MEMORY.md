@@ -21,6 +21,7 @@ Hot memory index for DemoAgent. Keep it index-like; 8k chars is a useful target 
 
 - Leaf summaries: `memory/leaves/`
 - Global digests: `memory/digests/`
+- Self-improving candidates: `memory/self-improving/`
 
 ## Rule
 
@@ -33,3 +34,5 @@ If an automatic promoted-memory section grows long, move it unchanged to `memory
 This mechanical cleanup is pre-approved only when source markers and referenced sources exist and the change does not touch persona, tool routing, framework policy, deletion/redaction, or semantic interpretation.
 
 Vector search is optional. If enabled, use it to retrieve topic/leaf/digest/promoted memory; do not treat embedding hits as proof.
+
+Corrections and post-task reflections stay in `memory/self-improving/` as candidates until they become reviewed `pending/memory-updates/` proposals.

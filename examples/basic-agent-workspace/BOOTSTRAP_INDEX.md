@@ -13,6 +13,7 @@
 - Topic index: `memory/topics/index.md`
 - Leaf summaries: `memory/leaves/`
 - Global digests: `memory/digests/`
+- Self-improving lane: `memory/self-improving/index.md`
 - Framework policy: `docs/framework/policy.md`
 
 ## Volatile Facts

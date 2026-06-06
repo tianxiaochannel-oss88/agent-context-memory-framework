@@ -12,6 +12,7 @@
 - 保护 Persona Agent 的核心人格、语气、关系定位和长期记忆不被稀释。
 - 让 Creative Workflow、deployment、Agent Runtime、proxy 等工作专题按需读取，而不是每轮全量注入。
 - 支持根据实际使用日志生成优化提案，让框架可以半自动迭代。
+- 把用户纠正和可复用任务复盘保存为可审查候选，而不是静默写入 hot memory。
 - 在高上下文、工具失败、线程切换时提供可执行的 recovery / 回档流程。
 - 所有核心人格、AGENTS、TOOLS 路由、hot memory、framework policy 的修改必须经过确认。
 
@@ -24,6 +25,7 @@
 + topic memory 按需读取
 + 当前状态复核
 + recovery trigger 处理长上下文和失败任务
++ self-improving candidate lane 保存纠正和复盘
 + 自动观察和提案
 + 四层审批门禁
 + 可测试和可回滚
@@ -55,6 +57,11 @@ memory/
 
   daily/
     2026-xx-xx.md
+
+  self-improving/
+    index.md
+    corrections.md
+    reflections.md
 
 docs/
   tools/
@@ -318,6 +325,58 @@ last_reviewed: 2026-05-16
 - 默认不 hot-load。
 - 未审查前不视为已批准 topic memory。
 - 真正长期有效的内容应再沉淀为带 source refs 的 leaf、topic 或 digest。
+
+### memory/self-improving/*.md
+
+定位：温层 correction/reflection lane，用于保存用户纠正、重复错误、重复工具路由失败和可复用的任务复盘教训。
+
+推荐文件：
+
+```text
+memory/self-improving/index.md
+memory/self-improving/corrections.md
+memory/self-improving/reflections.md
+```
+
+用途：
+
+- 用户明确纠正。
+- Agent 重复误判。
+- 失败任务或 recovery 产生的教训。
+- 行为漂移和重复工具误用。
+
+限制：
+
+- 候选记录不能直接修改 `MEMORY.md`、topic memory、persona、tool routing、权限边界或 framework policy。
+- 提升必须先进入 `pending/memory-updates/`，再由用户确认。
+- 易变事实使用前仍必须 live verification。
+
+记录应保持 vector-friendly：
+
+```yaml
+id: si-YYYY-MM-DD-short-slug
+type: correction | reflection
+scope: global | project:<name> | domain:<name>
+summary: "One sentence that captures the reusable lesson."
+keywords: []
+source_refs: []
+confidence: low | medium | high
+review_state: candidate | active | stale | archived | superseded
+verify_before_use: true | false
+valid_until:
+created_at: YYYY-MM-DD
+last_used_at:
+use_count: 0
+```
+
+正文必须包含：
+
+```text
+Trigger
+Lesson
+Use When
+Do Not Use When
+```
 
 ## 4. 加载分层
 
@@ -965,6 +1024,10 @@ memory/
     runtime.md
     deployment.md
     creative-workflows.md
+  self-improving/
+    index.md
+    corrections.md
+    reflections.md
   digests/
     2026-Wxx.md
 ```
@@ -1147,6 +1210,44 @@ rejected:
   仅用于审计，或从 active retrieval 中移除。
 ```
 
+#### Self-Improving Lane
+
+Self-improving memory 是候选通道，不是权威层。
+
+它用于保留可以减少重复错误的经验，同时避免增加 hot memory：
+
+```text
+explicit user correction
+repeated agent mistake
+post-task reflection
+tool-routing or workflow drift
+```
+
+这个 lane 应该可搜索、适合向量索引，但每条记录都必须有边界：
+
+```text
+Trigger
+Lesson
+Use When
+Do Not Use When
+source_refs
+confidence
+review_state
+verify_before_use
+valid_until
+```
+
+提升路径：
+
+```text
+self-improving candidate
+-> pending/memory-updates proposal
+-> user approval
+-> memory/topics/* or short MEMORY.md index pointer
+```
+
+Self-improving 记录不能静默改变 Core Persona、hot memory、tool routing、权限或 framework policy。如果某条纠正影响安全、外部发送、生产环境、权限或 persona 边界，必须按 protected change 处理并要求明确审批。
+
 #### Drift Tests
 
 Memory Tree Lite 应该有专门的回归测试：
@@ -1189,6 +1290,14 @@ raw / daily
 -> topic summary proposal
 -> user-approved topic update
 -> optional project/global digest
+```
+
+Self-improving candidate 有单独提升路径：
+
+```text
+self-improving correction/reflection
+-> pending memory update proposal
+-> user-approved topic update or short hot index pointer
 ```
 
 Hot Memory Ingestion Gate / 热记忆写入门槛：
@@ -1316,6 +1425,7 @@ automation-skills.md
 ```text
 memory/leaves/
 memory/digests/
+memory/self-improving/
 provenance front matter
 source_refs / derived_from
 drill-down retrieval rules

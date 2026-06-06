@@ -45,6 +45,7 @@ thin startup
 + fresh verification for volatile state
 + provenance-aware summaries
 + recovery triggers for long context or failed work
++ self-improving candidate lane for corrections and reflections
 + pending proposals for risky changes
 + four-level approval gates for self-evolution
 ```
@@ -54,7 +55,7 @@ thin startup
 | Layer | Purpose | Examples |
 | --- | --- | --- |
 | Hot | Always available, compact, high-priority | Core behavior policy, core persona, memory index, tool index |
-| Warm | Loaded only when relevant | Topic memory, profile notes, detailed tool docs, workflow notes |
+| Warm | Loaded only when relevant | Topic memory, profile notes, detailed tool docs, workflow notes, self-improving candidates |
 | Cold | Searched on demand | Daily logs, archives, transcripts, raw evidence |
 | Evidence | Verified live before action | Ports, processes, provider state, current branches, deployment state, model state |
 
@@ -87,7 +88,7 @@ See [Optional retrieval layer](docs/en/retrieval-layer.md) / [中文](docs/zh/re
 - **Traceable memory growth:** summaries can point back to their source notes, daily logs, or raw evidence instead of becoming unverifiable claims.
 - **Safer operations:** volatile facts are treated as hints and verified against current local state before action.
 - **Recoverable long sessions:** high context pressure, tool failures, or thread handoffs can trigger a fixed recovery workflow.
-- **Controlled evolution:** agents can propose improvements, but high-risk changes still require human approval.
+- **Controlled evolution:** agents can retain corrections and reflections as candidates, but high-risk changes still require human approval.
 - **Rollback-ready maintenance:** major framework changes should include backups, smoke tests, and health reports.
 
 ## Core Principles
@@ -101,6 +102,7 @@ See [Optional retrieval layer](docs/en/retrieval-layer.md) / [中文](docs/zh/re
 - Treat recovery as a workflow, not a note: daily log, leaf candidate, topic proposal, health check, and resume path.
 - Do not say recovery is complete until the recovery completion gate has been checked.
 - Keep the memory corpus vector-friendly, but treat embeddings and rerankers as optional retrieval accelerators, not memory authority.
+- Keep self-improving corrections and reflections in a warm candidate lane until they are reviewed and approved.
 - Let the framework observe usage and generate candidate updates.
 - Use approval gates before changing core persona, hot memory, tool routing, permission boundaries, or framework policy.
 - Keep major framework changes backed up, tested, and reversible.
@@ -167,6 +169,7 @@ core persona             -> memory/persona/core.md
 stable user preferences  -> MEMORY.md or memory/persona/profile.md
 tool details             -> docs/tools/*.md
 recurring work domains   -> memory/topics/*.md
+repeated mistakes         -> memory/self-improving/*.md
 daily logs               -> memory/daily/*.md
 archives/raw evidence    -> cold storage, searched on demand
 ```
@@ -190,6 +193,7 @@ Create a small `BOOTSTRAP_INDEX.md` that routes the agent instead of loading eve
 - memory/topics/index.md - topic routing.
 - memory/topics/runtime.md - runtime and context notes.
 - memory/topics/deployment.md - deployment workflows.
+- memory/self-improving/index.md - user corrections and post-task lessons.
 - docs/tools/*.md - detailed tool instructions.
 
 ## Volatile Facts
@@ -411,6 +415,29 @@ raw daily notes
 Each step should preserve source references when practical.
 
 This lets agents keep long-term knowledge compact without losing the ability to trace important claims back to raw notes.
+
+## Self-Improving Lane
+
+The framework also supports a minimal correction/reflection lane:
+
+```text
+memory/self-improving/index.md
+memory/self-improving/corrections.md
+memory/self-improving/reflections.md
+```
+
+Use it for explicit user corrections, repeated mistakes, repeated tool-routing failures, and post-task lessons. Each record should be short, vector-friendly, and include `source_refs`, `confidence`, `review_state`, `verify_before_use`, `valid_until`, and clear `Use When` / `Do Not Use When` boundaries.
+
+This lane is a warm candidate buffer. It does not directly change `MEMORY.md`, topic memory, persona, tool routing, permissions, or framework policy.
+
+Promotion path:
+
+```text
+self-improving candidate
+-> pending/memory-updates proposal
+-> user approval
+-> memory/topics/* or short MEMORY.md index pointer
+```
 
 ## Semi-Automatic Evolution
 

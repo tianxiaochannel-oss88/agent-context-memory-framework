@@ -10,6 +10,7 @@ It is safe to read and copy from, but do not copy it over a real workspace witho
 - Core persona in `memory/persona/core.md`
 - Topic routing through `memory/topics/index.md`
 - Memory Tree Lite with `memory/leaves/`, `memory/promoted/`, and `memory/digests/`
+- Self-improving candidate lane with `memory/self-improving/`
 - Provenance metadata with `source_refs`, `derived_from`, `review_state`, and `verify_before_use`
 - Approval gates under `docs/framework/policy.md`
 - Recovery trigger workflow under `docs/framework/recovery.md`

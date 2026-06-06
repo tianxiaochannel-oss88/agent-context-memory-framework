@@ -12,6 +12,7 @@ Core goals:
 - Preserve the agent's core persona, tone, relationship model, and durable memory.
 - Load work-domain memory only when needed instead of injecting every topic on every turn.
 - Generate framework-improvement proposals from real usage logs.
+- Preserve user corrections and reusable post-task lessons as reviewable candidates instead of silent hot-memory edits.
 - Recover safely from high context, failed tools, and thread handoffs.
 - Require explicit approval before changing core persona, hot memory, tool routing, or framework policy.
 
@@ -24,6 +25,7 @@ thin startup
 + topic memory on demand
 + fresh verification for volatile state
 + recovery triggers for long context and failed work
++ self-improving candidate lane for corrections and reflections
 + automatic observation and proposals
 + four-level approval gates for core changes
 + testable and reversible updates
@@ -55,6 +57,11 @@ memory/
 
   daily/
     2026-xx-xx.md
+
+  self-improving/
+    index.md
+    corrections.md
+    reflections.md
 
 docs/
   tools/
@@ -318,6 +325,58 @@ Limits:
 - Do not hot-load by default.
 - Do not treat as approved topic memory until reviewed.
 - Distill durable items into leaves, topics, or digests with source references.
+
+### memory/self-improving/*.md
+
+Purpose: warm correction/reflection lane for user corrections, repeated mistakes, repeated tool-routing failures, and reusable post-task lessons.
+
+Recommended files:
+
+```text
+memory/self-improving/index.md
+memory/self-improving/corrections.md
+memory/self-improving/reflections.md
+```
+
+Use for:
+
+- Explicit user corrections.
+- Repeated agent misjudgments.
+- Lessons from failed tasks or recoveries.
+- Behavior drift and repeated tool misuse.
+
+Limits:
+
+- Candidate records do not directly modify `MEMORY.md`, topic memory, persona, tool routing, permission boundaries, or framework policy.
+- Promotion must go through `pending/memory-updates/` and user approval.
+- Current volatile facts still require live verification before use.
+
+Records should stay vector-friendly:
+
+```yaml
+id: si-YYYY-MM-DD-short-slug
+type: correction | reflection
+scope: global | project:<name> | domain:<name>
+summary: "One sentence that captures the reusable lesson."
+keywords: []
+source_refs: []
+confidence: low | medium | high
+review_state: candidate | active | stale | archived | superseded
+verify_before_use: true | false
+valid_until:
+created_at: YYYY-MM-DD
+last_used_at:
+use_count: 0
+```
+
+Required body sections:
+
+```text
+Trigger
+Lesson
+Use When
+Do Not Use When
+```
 
 ## 4. Loading Layers
 
@@ -966,6 +1025,10 @@ memory/
     runtime.md
     deployment.md
     creative-workflows.md
+  self-improving/
+    index.md
+    corrections.md
+    reflections.md
   digests/
     2026-Wxx.md
 ```
@@ -1148,6 +1211,44 @@ rejected:
   kept only for audit or removed from active retrieval.
 ```
 
+#### Self-Improving Lane
+
+Self-improving memory is a candidate lane, not an authority layer.
+
+Use it to preserve lessons that may reduce repeated mistakes without increasing hot memory:
+
+```text
+explicit user correction
+repeated agent mistake
+post-task reflection
+tool-routing or workflow drift
+```
+
+The lane should remain searchable and vector-friendly, but every record must keep a boundary:
+
+```text
+Trigger
+Lesson
+Use When
+Do Not Use When
+source_refs
+confidence
+review_state
+verify_before_use
+valid_until
+```
+
+Promotion path:
+
+```text
+self-improving candidate
+-> pending/memory-updates proposal
+-> user approval
+-> memory/topics/* or short MEMORY.md index pointer
+```
+
+Do not let self-improving records silently change core persona, hot memory, tool routing, permissions, or framework policy. If a correction affects safety, external sends, production, permissions, or persona boundaries, treat promotion as a protected change and require explicit approval.
+
 #### Drift Tests
 
 Memory Tree Lite should have specific regression tests:
@@ -1190,6 +1291,14 @@ raw / daily
 -> topic summary proposal
 -> user-approved topic update
 -> optional project/global digest
+```
+
+Self-improving candidate promotion is separate:
+
+```text
+self-improving correction/reflection
+-> pending memory update proposal
+-> user-approved topic update or short hot index pointer
 ```
 
 Hot Memory Ingestion Gate:
@@ -1318,6 +1427,7 @@ automation-skills.md
 ```text
 memory/leaves/
 memory/digests/
+memory/self-improving/
 provenance front matter
 source_refs / derived_from
 drill-down retrieval rules
