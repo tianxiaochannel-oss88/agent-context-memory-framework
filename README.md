@@ -445,6 +445,14 @@ self-improving candidate
 -> memory/topics/* or short MEMORY.md index pointer
 ```
 
+Optional read-only maintenance tool:
+
+```bash
+bin/self-improving-health.zsh --workspace examples/basic-agent-workspace
+```
+
+The tool writes `reports/self-improving-health.md` and a pending maintenance proposal. It does not edit memory records, mark records stale, merge, delete, or promote anything.
+
 ## Semi-Automatic Evolution
 
 The framework can become more useful as it is used.
